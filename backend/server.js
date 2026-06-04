@@ -1,17 +1,21 @@
 const express = require('express');
 const app = express();
-const port = 3000 || process.env.PORT;
+const port =  process.env.PORT || 3000;
 const dotenv = require('dotenv');
 dotenv.config();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const connectDB = require('./database/db');
 connectDB();
-app.use(express.json());
-
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send("Hello World")
 })
+
+
+app.use('/api/auth', require('./routes/authRoute'));
 
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`)
