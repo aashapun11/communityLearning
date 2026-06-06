@@ -1,16 +1,14 @@
-let User = require('../models/UserModel');
-//user registeration
+const User = require('../models/UserModel');
+const AppError = require('../utils/AppError');
+
+const generateToken = require('../utils/generateToken');
     const registerUser = async (req, res) => {
     try {
         const { name, email, password} = req.body;
 
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            return next(new AppError("User already exists", 400));
         }
 
         const newUser = new User({ name, email, password});
@@ -19,11 +17,41 @@ let User = require('../models/UserModel');
         res.status(201).json({ message: "User registered successfully" });
         
     } catch (err) {
-        res.status(500).json({ message: "Server error", error: err.message });
+        next(err);
     }
 };
 
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return next(new AppError("Invalid credentials", 401));
+        }
+        res.status(200).json({ message: "Login successful",
+             token: generateToken(user._id),
+             user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+             }
+            
+            });
+    } catch (err) {
+        next(err);
+    }
+};
 
-const authController = {registerUser};
+const getProfile = async (req, res) => {
+    res.status(200).json({
+        message: "Profile fetched",
+        user: req.user  // comes from authMiddleware
+    });
+};
+
+
+const authController = {registerUser, loginUser, getProfile};
 
 module.exports = authController

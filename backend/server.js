@@ -10,12 +10,17 @@ app.use(express.urlencoded({ extended: true }));
 const connectDB = require('./database/db');
 connectDB();
 
+const errorHandler = require("./middleware/errorHandler");
+app.use(errorHandler);
+
+
 app.get('/', (req, res) => {
     res.send("Hello World")
 })
 
 
 app.use('/api/auth', require('./routes/authRoute'));
+app.use('/api/challenges', require('./routes/challengeRoute'));
 
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`)
