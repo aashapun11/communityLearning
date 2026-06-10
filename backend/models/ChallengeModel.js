@@ -11,7 +11,7 @@ title: {
    topic: {
     type: String,
     required: true,
-    enum: ['algorithms', 'data-structures', 'mathematics', 
+    enum: ['algorithms', 'data-structures', 'javascript', 
            'artificial-intelligence', 'c', 'c++', 'java', 
            'python', 'node', 'sql', 'databases', 'linux-shell'],
 

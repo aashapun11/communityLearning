@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/challenges', require('./routes/challengeRoute'));
+app.use('/api/checkins', require('./routes/checkInRoute'));
 
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`)
