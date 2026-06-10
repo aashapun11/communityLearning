@@ -13,7 +13,7 @@ title: {
     required: true,
     enum: ['algorithms', 'data-structures', 'mathematics', 
            'artificial-intelligence', 'c', 'c++', 'java', 
-           'python', 'ruby', 'sql', 'databases', 'linux-shell'],
+           'python', 'node', 'sql', 'databases', 'linux-shell'],
 
 //       Seee this ...................        enum: [
 //     // Core CS
@@ -130,6 +130,10 @@ title: {
     default: null // null = unlimited
     },
     isPublic: {
+        type: Boolean,
+        default: true
+    },
+    isActive: {
         type: Boolean,
         default: true
     }

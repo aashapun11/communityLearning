@@ -15,4 +15,19 @@ const createChallengeValidator = [
         .withMessage('Valid start date is required'),
 ];
 
-module.exports = { createChallengeValidator };
+const updateChallengeValidator = [
+    body('title').optional().notEmpty().withMessage('Title cannot be empty'),
+    body('topic').optional().notEmpty().withMessage('Topic cannot be empty'),
+    body('description').optional().notEmpty().withMessage('Description cannot be empty'),
+    body('difficulty').optional()
+        .isIn(['beginner', 'intermediate', 'advanced'])
+        .withMessage('Invalid difficulty'),
+    body('duration').optional()
+        .isInt({ min: 1 })
+        .withMessage('Duration must be at least 1 day'),
+    body('startDate').optional()
+        .isDate()
+        .withMessage('Valid start date is required'),
+];
+
+module.exports = { createChallengeValidator, updateChallengeValidator };

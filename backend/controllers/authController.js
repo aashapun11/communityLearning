@@ -2,11 +2,12 @@ const User = require('../models/UserModel');
 const AppError = require('../utils/AppError');
 
 const generateToken = require('../utils/generateToken');
-    const registerUser = async (req, res) => {
+    const registerUser = async (req, res, next) => {
     try {
         const { name, email, password} = req.body;
 
         const existingUser = await User.findOne({ email });
+
         if (existingUser) {
             return next(new AppError("User already exists", 400));
         }
@@ -21,10 +22,13 @@ const generateToken = require('../utils/generateToken');
     }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+        if (!user) {
+            return next(new AppError("User not found", 404));
+        }
         
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
