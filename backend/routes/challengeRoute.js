@@ -4,12 +4,13 @@ const { createChallenge, updateChallenge, deleteChallenge, getChallenges, getCha
 const { createChallengeValidator, updateChallengeValidator } = require('../validators/challengeValidator');
 const validate = require('../middleware/validate');
 const protect = require('../middleware/authMiddleware');
+const optionalAuth = require('../middleware/optionalMiddleware');
 
 router.post('/createChallenge', protect, createChallengeValidator, validate, createChallenge);
 router.patch('/updateChallenge/:id', protect, updateChallengeValidator, validate, updateChallenge);
 router.delete('/deleteChallenge/:id', protect, deleteChallenge);
 router.get('/getChallenges', protect, getChallenges);
-router.get('/getChallengeById/:id', protect, getChallengeById);
+router.get('/getChallengeById/:id', optionalAuth, getChallengeById);
 router.post('/joinChallenge/:id', protect, joinChallenge);
 router.delete('/leaveChallenge/:id', protect, leaveChallenge);
 

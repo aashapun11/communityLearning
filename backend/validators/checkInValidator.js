@@ -11,4 +11,14 @@ const createCheckInValidator = [
         .withMessage('Note cannot exceed 500 characters'),
 ];
 
-module.exports = { createCheckInValidator };
+const editCheckInValidator = [
+    body('note')
+        .optional()
+        .notEmpty()
+        .withMessage('Note cannot be empty')
+        .isLength({ max: 500 })
+        .withMessage('Note cannot exceed 500 characters'),
+];
+
+module.exports = { createCheckInValidator, editCheckInValidator };
+

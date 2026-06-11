@@ -51,10 +51,10 @@ const updateChallenge = async (req, res, next) => {
             return next(new AppError("Not authorized to update this challenge", 403));
         }
 
-        // lock if participants have joined
-        if (challenge.participants.length > 0) {
-            return next(new AppError("Cannot update challenge once participants have joined", 400));
-        }
+        // // lock if participants have joined
+        // if (challenge.participants.length > 0) {
+        //     return next(new AppError("Cannot update challenge once participants have joined", 400));
+        // }
 
         // recalculate endDate if startDate or duration changes
         const start = new Date(startDate || challenge.startDate);
@@ -180,6 +180,23 @@ const getChallengeById = async (req, res, next) => {
         else if (today > challenge.endDate) status = "completed";
         else status = "ongoing";
 
+         // user progress — only if logged in
+        let userProgress = null;
+        if (req.user) {
+            const totalCheckIns = await CheckIn.countDocuments({
+                userId: req.user._id,
+                challengeId: id
+            });
+
+            userProgress = {
+                totalCheckIns,
+                progressPercent: Math.min(100,
+                    Math.floor((totalCheckIns / challenge.duration) * 100)
+                ),
+                isCompleted: totalCheckIns >= challenge.duration
+            };
+        }
+
         res.status(200).json({
             challenge,
             stats: {
@@ -188,7 +205,8 @@ const getChallengeById = async (req, res, next) => {
                 daysRemaining,
                 progressPercent,
                 status
-            }
+            },
+            userProgress
         });
 
     } catch (err) {

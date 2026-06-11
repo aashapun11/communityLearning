@@ -32,8 +32,11 @@ const createCheckIn = async (req, res, next) => {
         }
 
         // one check-in per day
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+            const startOfDay = new Date(today);
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date(today);
+            endOfDay.setHours(23, 59, 59, 999);
 
         const existingCheckIn = await CheckIn.findOne({
             userId: req.user._id,
@@ -65,4 +68,88 @@ const createCheckIn = async (req, res, next) => {
     }
 };
 
-module.exports = { createCheckIn };
+const editCheckIn = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { note, mediaUrl } = req.body;
+
+        const checkIn = await CheckIn.findById(id);
+
+        // check-in exists?
+        if (!checkIn) {
+            return next(new AppError("Check-in not found", 404));
+        }
+
+        // only owner can edit
+        if (checkIn.userId.toString() !== req.user._id.toString()) {
+            return next(new AppError("Not authorized to edit this check-in", 403));
+        }
+
+        // only same day edit allowed
+        const today = new Date();
+        const checkInDate = new Date(checkIn.date);
+
+        const isSameDay =
+            today.getFullYear() === checkInDate.getFullYear() &&
+            today.getMonth() === checkInDate.getMonth() &&
+            today.getDate() === checkInDate.getDate();
+
+        if (!isSameDay) {
+            return next(new AppError("You can only edit today's check-in", 400));
+        }
+
+        checkIn.note = note || checkIn.note;
+        checkIn.mediaUrl = mediaUrl ?? checkIn.mediaUrl;
+
+        await checkIn.save();
+
+        res.status(200).json({
+            message: "Check-in updated successfully",
+            checkIn
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+const deleteCheckIn = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const checkIn = await CheckIn.findById(id);
+
+        // check-in exists?
+        if (!checkIn) {
+            return next(new AppError("Check-in not found", 404));
+        }
+
+        // only owner can delete
+        if (checkIn.userId.toString() !== req.user._id.toString()) {
+            return next(new AppError("Not authorized to delete this check-in", 403));
+        }
+
+        // only same day deletion allowed
+        const today = new Date();
+        const checkInDate = new Date(checkIn.date);
+
+        const isSameDay =
+            today.getFullYear() === checkInDate.getFullYear() &&
+            today.getMonth() === checkInDate.getMonth() &&
+            today.getDate() === checkInDate.getDate();
+
+        if (!isSameDay) {
+            return next(new AppError("You can only delete today's check-in", 400));
+        }
+
+        await CheckIn.findByIdAndDelete(id);
+
+        res.status(200).json({ message: "Check-in deleted successfully" });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+module.exports = { createCheckIn, editCheckIn, deleteCheckIn };
