@@ -1,4 +1,5 @@
 const Challenge = require('../models/ChallengeModel');
+const CheckIn = require('../models/CheckInModel');
 const AppError = require('../utils/AppError');
 
 const createChallenge = async (req, res, next) => {
@@ -182,19 +183,26 @@ const getChallengeById = async (req, res, next) => {
 
          // user progress — only if logged in
         let userProgress = null;
-        if (req.user) {
-            const totalCheckIns = await CheckIn.countDocuments({
-                userId: req.user._id,
-                challengeId: id
-            });
 
-            userProgress = {
-                totalCheckIns,
-                progressPercent: Math.min(100,
-                    Math.floor((totalCheckIns / challenge.duration) * 100)
-                ),
-                isCompleted: totalCheckIns >= challenge.duration
-            };
+        if (req.user) {
+            const isParticipant = challenge.participants.some(
+                p => p._id.toString() === req.user._id.toString()
+            );
+
+            if (isParticipant) {
+                const totalCheckIns = await CheckIn.countDocuments({
+                    userId: req.user._id,
+                    challengeId: id
+                });
+
+                userProgress = {
+                    totalCheckIns,
+                    progressPercent: Math.min(100,
+                        Math.floor((totalCheckIns / challenge.duration) * 100)
+                    ),
+                    isCompleted: totalCheckIns >= challenge.duration
+                };
+            }
         }
 
         res.status(200).json({
