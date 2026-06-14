@@ -151,5 +151,39 @@ const deleteCheckIn = async (req, res, next) => {
     }
 };
 
+const getChallengeFeed = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { page = 1, limit = 10 } = req.query;
 
-module.exports = { createCheckIn, editCheckIn, deleteCheckIn };
+        const challenge = await Challenge.findById(id);
+        if (!challenge) {
+            return next(new AppError("Challenge not found", 404));
+        }
+
+        const skip = (page - 1) * limit;
+
+        const checkIns = await CheckIn.find({ challengeId: id  })
+            .populate('userId', 'name avatar')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(Number(limit));
+
+        const total = await CheckIn.countDocuments({ challengeId: id  });
+
+        res.status(200).json({
+            checkIns,
+            pagination: {
+                total,
+                page: Number(page),
+                pages: Math.ceil(total / limit)
+            }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed };
