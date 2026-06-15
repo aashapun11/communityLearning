@@ -52,10 +52,10 @@ const updateChallenge = async (req, res, next) => {
             return next(new AppError("Not authorized to update this challenge", 403));
         }
 
-        // // lock if participants have joined
-        // if (challenge.participants.length > 0) {
-        //     return next(new AppError("Cannot update challenge once participants have joined", 400));
-        // }
+        // lock if participants have joined
+        if (challenge.participants.length > 0) {
+            return next(new AppError("Cannot update challenge once participants have joined", 400));
+        }
 
         // recalculate endDate if startDate or duration changes
         const start = new Date(startDate || challenge.startDate);

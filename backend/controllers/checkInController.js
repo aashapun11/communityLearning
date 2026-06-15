@@ -1,6 +1,8 @@
 const CheckIn = require('../models/CheckInModel');
 const Challenge = require('../models/ChallengeModel');
 const AppError = require('../utils/AppError');
+const {getStartAndEndOfDay, isSameDay} = require('../utils/DateUtils');
+const { calculateCurrentStreak, calculateLongestStreak} = require('../utils/streakHelper');
 
 const createCheckIn = async (req, res, next) => {
     try {
@@ -32,11 +34,7 @@ const createCheckIn = async (req, res, next) => {
         }
 
         // one check-in per day
-            const startOfDay = new Date(today);
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date(today);
-            endOfDay.setHours(23, 59, 59, 999);
+           const { startOfDay, endOfDay } = getStartAndEndOfDay();
 
         const existingCheckIn = await CheckIn.findOne({
             userId: req.user._id,
@@ -89,13 +87,8 @@ const editCheckIn = async (req, res, next) => {
         const today = new Date();
         const checkInDate = new Date(checkIn.date);
 
-        const isSameDay =
-            today.getFullYear() === checkInDate.getFullYear() &&
-            today.getMonth() === checkInDate.getMonth() &&
-            today.getDate() === checkInDate.getDate();
-
-        if (!isSameDay) {
-            return next(new AppError("You can only edit today's check-in", 400));
+        if (!isSameDay(today, checkInDate)) {
+        return next(new AppError("You can only edit today's check-in", 400));
         }
 
         checkIn.note = note || checkIn.note;
@@ -133,13 +126,8 @@ const deleteCheckIn = async (req, res, next) => {
         const today = new Date();
         const checkInDate = new Date(checkIn.date);
 
-        const isSameDay =
-            today.getFullYear() === checkInDate.getFullYear() &&
-            today.getMonth() === checkInDate.getMonth() &&
-            today.getDate() === checkInDate.getDate();
-
-        if (!isSameDay) {
-            return next(new AppError("You can only delete today's check-in", 400));
+       if (!isSameDay(today, checkInDate)) {
+        return next(new AppError("You can only edit today's check-in", 400));
         }
 
         await CheckIn.findByIdAndDelete(id);
@@ -154,7 +142,8 @@ const deleteCheckIn = async (req, res, next) => {
 const getChallengeFeed = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { page = 1, limit = 10 } = req.query;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
 
         const challenge = await Challenge.findById(id);
         if (!challenge) {
@@ -185,5 +174,25 @@ const getChallengeFeed = async (req, res, next) => {
     }
 };
 
+const getUserStreak = async (req, res, next) => {
+    try {
+        const { challengeId } = req.params;
 
-module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed };
+        const checkIns = await CheckIn.find({
+            userId: req.user._id,
+            challengeId
+        }).select('date');
+
+        const currentStreak = calculateCurrentStreak(checkIns);
+        const longestStreak = calculateLongestStreak(checkIns);
+
+
+        res.status(200).json({ currentStreak, longestStreak });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed, getUserStreak };
