@@ -1,48 +1,44 @@
-const calculateCurrentStreak = (checkIns) => {
+const { DateTime } = require('luxon');
+
+const toUserMidnight = (date, timezone) => {
+    return DateTime.fromJSDate(new Date(date))
+        .setZone(timezone)
+        .startOf('day');
+};
+
+const calculateCurrentStreak = (checkIns, timezone = 'UTC') => {
     if (checkIns.length === 0) return 0;
 
-    // sort by date newest → oldest
+    // sort newest → oldest
     const sorted = checkIns
         .map(c => new Date(c.date))
         .sort((a, b) => b - a);
 
-    // normalize to midnight for comparison
-    const toMidnight = (date) => {
-        const d = new Date(date);
-        d.setHours(0, 0, 0, 0);
-        return d;
-    };
-
-    const today = toMidnight(new Date());
-    const yesterday = toMidnight(new Date());
-    yesterday.setDate(yesterday.getDate() - 1);
+    const today = DateTime.now().setZone(timezone).startOf('day');
+    const yesterday = today.minus({ days: 1 });
 
     // streak must start from today or yesterday
-    const firstCheckIn = toMidnight(sorted[0]);
-    if (firstCheckIn < yesterday) return 0;
+    const firstCheckIn = toUserMidnight(sorted[0], timezone);
+    if (firstCheckIn.toMillis() < yesterday.toMillis()) return 0;
 
     let streak = 1;
     for (let i = 1; i < sorted.length; i++) {
-        const current = toMidnight(sorted[i]);
-        const previous = toMidnight(sorted[i - 1]);
+        const current = toUserMidnight(sorted[i], timezone);
+        const previous = toUserMidnight(sorted[i - 1], timezone);
 
-        const diffDays = Math.round(
-            (previous - current) / (1000 * 60 * 60 * 24)
-        );
-        if (diffDays === 0) {
-         continue; // ignore duplicates
-        }
-        if (diffDays === 1) {
+        const diffDays = previous.diff(current, 'days').days;
+
+        if (Math.round(diffDays) === 1) {
             streak++;
         } else {
-            break; // gap found → stop
+            break;
         }
     }
 
     return streak;
 };
 
-const calculateLongestStreak = (checkIns) => {
+const calculateLongestStreak = (checkIns, timezone = 'UTC') => {
     if (checkIns.length === 0) return 0;
 
     // sort oldest → newest
@@ -50,28 +46,20 @@ const calculateLongestStreak = (checkIns) => {
         .map(c => new Date(c.date))
         .sort((a, b) => a - b);
 
-    const toMidnight = (date) => {
-        const d = new Date(date);
-        d.setHours(0, 0, 0, 0);
-        return d;
-    };
-
     let longestStreak = 1;
     let currentStreak = 1;
 
     for (let i = 1; i < sorted.length; i++) {
-        const current = toMidnight(sorted[i]);
-        const previous = toMidnight(sorted[i - 1]);
+        const current = toUserMidnight(sorted[i], timezone);
+        const previous = toUserMidnight(sorted[i - 1], timezone);
 
-        const diffDays = Math.round(
-            (current - previous) / (1000 * 60 * 60 * 24)
-        );
+        const diffDays = current.diff(previous, 'days').days;
 
-        if (diffDays === 1) {
+        if (Math.round(diffDays) === 1) {
             currentStreak++;
             longestStreak = Math.max(longestStreak, currentStreak);
         } else {
-            currentStreak = 1; // reset
+            currentStreak = 1;
         }
     }
 

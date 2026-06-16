@@ -1,5 +1,6 @@
 const CheckIn = require('../models/CheckInModel');
 const Challenge = require('../models/ChallengeModel');
+const User = require('../models/UserModel');
 const AppError = require('../utils/AppError');
 const {getStartAndEndOfDay, isSameDay} = require('../utils/DateUtils');
 const { calculateCurrentStreak, calculateLongestStreak} = require('../utils/streakHelper');
@@ -178,21 +179,27 @@ const getUserStreak = async (req, res, next) => {
     try {
         const { challengeId } = req.params;
 
+        // get user timezone
+        const user = await User.findById(req.user._id).select('timezone');
+        const timezone = user.timezone || 'UTC';
+
         const checkIns = await CheckIn.find({
             userId: req.user._id,
             challengeId
         }).select('date');
 
-        const currentStreak = calculateCurrentStreak(checkIns);
-        const longestStreak = calculateLongestStreak(checkIns);
+        const currentStreak = calculateCurrentStreak(checkIns, timezone);
+        const longestStreak = calculateLongestStreak(checkIns, timezone);
 
-
-        res.status(200).json({ currentStreak, longestStreak });
+        res.status(200).json({
+            currentStreak,
+            longestStreak,
+            timezone
+        });
 
     } catch (err) {
         next(err);
     }
 };
-
 
 module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed, getUserStreak };

@@ -4,7 +4,7 @@ const AppError = require('../utils/AppError');
 const generateToken = require('../utils/generateToken');
     const registerUser = async (req, res, next) => {
     try {
-        const { name, email, username, password} = req.body;
+        const { name, email, username, password, timezone} = req.body;
 
         const existingUser = await User.findOne({ email });
 
@@ -12,7 +12,7 @@ const generateToken = require('../utils/generateToken');
             return next(new AppError("User already exists", 400));
         }
 
-        const newUser = new User({ name, email, username, password});
+        const newUser = new User({ name, email, username, password, timezone });
         await newUser.save(); // bcrypt pre('save') hook triggers here
 
         res.status(201).json({ message: "User registered successfully" });

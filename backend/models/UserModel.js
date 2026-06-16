@@ -32,7 +32,23 @@ const UserSchema = mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    timezone: {
+    type: String,
+    default: 'UTC'
+   },
+   currentStreak: {
+    type: Number,
+    default: 0
+},
+longestStreak: {
+    type: Number,
+    default: 0
+},
+lastCheckInDate: {
+    type: Date,
+    default: null
+}
 });
 
 // hash password before saving
