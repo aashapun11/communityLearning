@@ -40,16 +40,16 @@ const UserSchema = mongoose.Schema({
    currentStreak: {
     type: Number,
     default: 0
-},
-longestStreak: {
-    type: Number,
-    default: 0
-},
-lastCheckInDate: {
-    type: Date,
-    default: null
-}
-});
+    },
+    longestStreak: {
+        type: Number,
+        default: 0
+    },
+    lastCheckInDate: {
+        type: Date,
+        default: null
+    }
+    });
 
 // hash password before saving
 UserSchema.pre('save', async function() {

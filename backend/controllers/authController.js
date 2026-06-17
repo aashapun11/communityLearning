@@ -1,5 +1,6 @@
 const User = require('../models/UserModel');
 const AppError = require('../utils/AppError');
+const { DateTime } = require('luxon');
 
 const generateToken = require('../utils/generateToken');
     const registerUser = async (req, res, next) => {
@@ -31,7 +32,8 @@ const loginUser = async (req, res, next) => {
                 { email: emailOrUsername },
                 { username: emailOrUsername }
             ]
-        });
+        }).select( 'password name email role currentStreak longestStreak lastCheckInDate timezone');
+
         if (!user) {
             return next(new AppError("User not found", 404));
         }
@@ -40,13 +42,34 @@ const loginUser = async (req, res, next) => {
         if (!isMatch) {
             return next(new AppError("Invalid credentials", 401));
         }
+
+        // calculate real time streak
+        const today = DateTime.now().setZone(user.timezone).startOf('day');
+
+        const lastDate = user.lastCheckInDate
+            ? DateTime.fromJSDate(user.lastCheckInDate)
+                .setZone(user.timezone).startOf('day')
+            : null;
+
+        let currentStreak = user.currentStreak;
+
+        if (lastDate) {
+            const diffDays = today.diff(lastDate, 'days').days;
+            if (Math.round(diffDays) > 1) currentStreak = 0;
+}
+
+
         res.status(200).json({ message: "Login successful",
              token: generateToken(user._id),
              user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-             }
+             },
+            streak: {
+            currentStreak,
+            longestStreak: user.longestStreak
+            }
             
             });
     } catch (err) {
