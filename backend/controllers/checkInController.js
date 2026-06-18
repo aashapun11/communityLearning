@@ -197,4 +197,42 @@ const getUserStreak = async (req, res, next) => {
     }
 };
 
-module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed, getUserStreak };
+const toggleUpvote = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const checkIn = await CheckIn.findById(id);
+        if (!checkIn) {
+            return next(new AppError("Check-in not found", 404));
+        }
+
+        // can't upvote your own check-in
+        if (checkIn.userId.toString() === req.user._id.toString()) {
+            return next(new AppError("You cannot upvote your own check-in", 400));
+        }
+
+        const alreadyUpvoted = checkIn.upvotes.includes(req.user._id);
+
+        if (alreadyUpvoted) {
+            // remove upvote
+            checkIn.upvotes = checkIn.upvotes.filter(
+                id => id.toString() !== req.user._id.toString()
+            );
+        } else {
+            // add upvote
+            checkIn.upvotes.push(req.user._id);
+        }
+
+        await checkIn.save();
+
+        res.status(200).json({
+            message: alreadyUpvoted ? "Upvote removed" : "Upvoted successfully",
+            totalUpvotes: checkIn.upvotes.length
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports = { createCheckIn, editCheckIn, deleteCheckIn, getChallengeFeed, getUserStreak, toggleUpvote };

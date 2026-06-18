@@ -158,8 +158,6 @@ const followUser = async (req, res, next) => {
             following: userId
         });
 
-        // TODO: trigger notification (Day 54)
-
         res.status(201).json({ message: "User followed successfully" });
 
     } catch (err) {
@@ -213,7 +211,7 @@ const getFollowers = async (req, res, next) => {
 
         const followers = await Follow.find({
             following: userId
-        }).populate('follower', 'name username profilePicture')
+        }).populate('follower', 'name username avatar')
         .skip(skip)
         .limit(limit);
 
@@ -243,7 +241,7 @@ const getFollowing = async (req, res, next) => {
         const following = await Follow.find({
             follower: userId
         })
-            .populate('following', 'name username profilePicture')
+            .populate('following', 'name username avatar')
             .skip(skip)
             .limit(limit);
 

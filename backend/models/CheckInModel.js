@@ -30,4 +30,6 @@ const checkInSchema = new mongoose.Schema({
 },
 { timestamps: true });
 
+checkInSchema.index({ userId: 1, createdAt: -1 });
+
 module.exports = mongoose.model('CheckIn', checkInSchema);
