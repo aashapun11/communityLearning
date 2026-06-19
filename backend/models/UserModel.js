@@ -48,7 +48,11 @@ const UserSchema = mongoose.Schema({
     lastCheckInDate: {
         type: Date,
         default: null
-    }
+    },
+    coins: {
+    type: Number,
+    default: 0
+   }
     });
 
 // hash password before saving
