@@ -4,6 +4,8 @@ const User = require('../models/UserModel');
 const AppError = require('../utils/AppError');
 const {getStartAndEndOfDay, isSameDay} = require('../utils/DateUtils');
 const {updateUserStreak} = require('../utils/streakHelper');
+const { processCheckInRewards } = require('../utils/checkInRewards');
+const { processCompletionRewards } = require('../utils/challengeRewards');
 
 const createCheckIn = async (req, res, next) => {
     try {
@@ -60,12 +62,26 @@ const createCheckIn = async (req, res, next) => {
         //Update Streak after new checkin-in
         const { currentStreak, longestStreak } = await updateUserStreak(req.user._id, req.user.timezone);
 
+        const rewards = await processCheckInRewards(req.user._id, currentStreak);
+
+        // check challenge completion
+        const completionRewards = await processCompletionRewards(req.user._id, challenge);
+        if (completionRewards) {
+            rewards.totalCoinsEarned += completionRewards.totalCoinsEarned;
+            rewards.badgesEarned.push(...completionRewards.badgesEarned);
+        }
+
         res.status(201).json({
             message: "Check-in created successfully",
             checkIn,
             streak: {
                 currentStreak,
                 longestStreak
+            },
+             rewards: {
+                totalCoinsEarned: rewards.totalCoinsEarned,
+                badgesEarned: rewards.badgesEarned,
+                coinBreakdown: rewards.coinBreakdown
             }
         });
 

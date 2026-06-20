@@ -1,6 +1,8 @@
 const Challenge = require('../models/ChallengeModel');
 const CheckIn = require('../models/CheckInModel');
 const AppError = require('../utils/AppError');
+const { processJoinRewards } = require('../utils/challengeRewards');
+
 
 const createChallenge = async (req, res, next) => {
     try {
@@ -252,7 +254,16 @@ const joinChallenge = async (req, res, next) => {
         challenge.participants.push(req.user._id);
         await challenge.save();
 
-        res.status(200).json({ message: "Successfully joined the challenge" });
+        const rewards = await processJoinRewards(req.user._id);
+
+        res.status(200).json(
+            {message: "Successfully joined the challenge" ,
+            rewards : {
+                totalCoinsEarned: rewards.totalCoinsEarned,
+                badgesEarned: rewards.badgesEarned
+            }
+        }
+        );
 
     } catch (err) {
         next(err);
