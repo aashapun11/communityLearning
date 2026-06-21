@@ -4,6 +4,7 @@ const CheckIn = require('../models/CheckInModel');
 const Follow = require('../models/FollowModel');
 const AppError = require('../utils/AppError');
 const { DateTime } = require('luxon');
+const { processFollowRewards } = require('../utils/socialRewards');
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -158,7 +159,16 @@ const followUser = async (req, res, next) => {
             following: userId
         });
 
-        res.status(201).json({ message: "User followed successfully" });
+
+        const rewards = await processFollowRewards(req.user._id, userId);
+
+        res.status(201).json({
+            message: "User followed successfully",
+            rewards: {
+                totalCoinsEarned: rewards.totalCoinsEarned,
+                badgesEarned: rewards.badgesEarned
+            }
+        });
 
     } catch (err) {
         next(err);

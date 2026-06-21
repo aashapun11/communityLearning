@@ -29,9 +29,9 @@ const BADGE_DEFINITIONS = {
     // social badges
     social_butterfly: { title: 'Social Butterfly', description: 'Followed 5 people 🦋', coins: 10 },
     community_builder: { title: 'Community Builder', description: 'Followed 10 people 🏘️', coins: 20 },
-    crowd_favorite: { title: 'Crowd Favorite', description: 'Received 10 upvotes ⭐', coins: 15 },
-    inspiration: { title: 'Inspiration', description: 'Received 50 upvotes 💫', coins: 40 },
-    role_model: { title: 'Role Model', description: 'Received 100 upvotes 🏆', coins: 75 },
+    crowd_favorite: { title: 'Crowd Favorite', description: 'Got 10 followers ⭐', coins: 15 },
+    inspiration: { title: 'Inspiration', description: 'Got 50 followers 💫', coins: 40 },
+    role_model: { title: 'Role Model', description: 'Got 100 followers 🏆', coins: 75 },
 
     // topic badge
     topic_complete: { title: 'Topic Master', description: 'Completed a topic challenge 📚', coins: 25 },
