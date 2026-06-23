@@ -5,7 +5,7 @@ const Follow = require('../models/FollowModel');
 const AppError = require('../utils/AppError');
 const { DateTime } = require('luxon');
 const { processFollowRewards } = require('../utils/socialRewards');
-
+const { createNotification } = require('../utils/notificationHelper');
 const getUserProfile = async (req, res, next) => {
     try {
         const { username } = req.params;
@@ -159,6 +159,13 @@ const followUser = async (req, res, next) => {
             following: userId
         });
 
+        await createNotification(
+            userId,
+            'follow',
+            `${req.user.name} started following you`,
+            req.user._id,
+            'User'
+        );
 
         const rewards = await processFollowRewards(req.user._id, userId);
 
@@ -195,6 +202,8 @@ const unfollowUser = async (req, res, next) => {
             follower: req.user._id,
             following: userId
         });
+
+
         if (!existingFollow) {
             return next(new AppError("You are not following this user", 400));
         }

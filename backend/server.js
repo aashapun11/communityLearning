@@ -25,6 +25,8 @@ app.use('/api/checkins', require('./routes/checkInRoute'));
 app.use('/api/users', require('./routes/userRoute'));
 app.use('/api/feed', require('./routes/feedRoute'));
 app.use('/api/comments', require('./routes/commentRoute'));
+app.use('/api/notifications', require('./routes/notificationRoute'));
+app.use('/api/leaderboard', require('./routes/leaderboardRoute'));
 
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`)

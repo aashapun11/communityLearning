@@ -1,5 +1,6 @@
 const Badge = require('../models/BadgeModel');
 const User = require('../models/UserModel');
+const {createNotification} = require('./notificationHelper');
 
 const BADGE_DEFINITIONS = {
     // streak badges
@@ -66,6 +67,16 @@ const awardBadge = async (userId, type, metadata = {}) => {
             $inc: { coins: definition.coins }
         });
 
+        //create notification
+
+        await createNotification(
+        userId,
+        'badge_earned',
+        `You earned the ${definition.title} badge! 🏆`,
+        badge._id,
+        'Badge'
+    );
+        
         return { badge, coinsAwarded: definition.coins };
 
     } catch (err) {

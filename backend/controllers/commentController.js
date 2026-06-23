@@ -1,34 +1,88 @@
 const Comment = require('../models/CommentModel');
+const CheckIn = require('../models/CheckInModel');
+// const Post = require('../models/PostModel');
 const AppError = require('../utils/AppError');
+const {createNotification} = require('../utils/notificationHelper');
 
 // Add comment or reply
 const addComment = async (req, res, next) => {
     try {
         const { targetId, targetType, text, parentId } = req.body;
 
-        // if reply → check parent comment exists
-        if (parentId) {
-            const parentComment = await Comment.findById(parentId);
-            if (!parentComment) {
-                return next(new AppError("Parent comment not found", 404));
-            }
+    // get target owner
+    let targetOwnerId;
+    if (targetType === 'CheckIn') {
+        const checkIn = await CheckIn.findById(targetId).select('userId');
+        targetOwnerId = checkIn.userId;
+    } 
+    else if (targetType === 'Post') {
+        const post = await Post.findById(targetId).select('userId');
+        targetOwnerId = post.userId;
+    }
+
+    // if reply → check parent comment exists
+    let parentComment = null;
+    if (parentId) {
+        parentComment = await Comment.findById(parentId);
+        if (!parentComment) {
+            return next(new AppError("Parent comment not found", 404));
         }
+    }
 
-        const comment = await Comment.create({
-            userId: req.user._id,
-            targetId,
-            targetType,
-            text,
-            parentId: parentId || null
-        });
+    const comment = await Comment.create({
+        userId: req.user._id,
+        targetId,
+        targetType,
+        text,
+        parentId: parentId || null
+    });
 
-        await comment.populate('userId', 'name username avatar');
+    await comment.populate('userId', 'name username avatar');
 
-        res.status(201).json({
-            message: "Comment added successfully",
-            comment
-        });
+    // notifications
+    if (parentComment) {
+        // reply → notify parent comment owner
+        const parentOwnerId = parentComment.userId;
 
+        if (parentOwnerId.toString() !== req.user._id.toString()){
+            await createNotification(
+                parentOwnerId,
+                'comment',
+                `${req.user.name} replied to your comment`,
+                comment._id,
+                'Comment'
+            );
+        }
+ // notify target owner only if different from parent comment owner
+        if (
+            targetOwnerId.toString() !== req.user._id.toString() &&
+            targetOwnerId.toString() !== parentOwnerId.toString()
+        ) {
+            await createNotification(
+                targetOwnerId,
+                'comment',
+                `${req.user.name} commented on your ${targetType}`,
+                comment._id,
+                targetType
+            );
+        }
+    } else {
+        // top level comment → notify target owner
+        if (targetOwnerId.toString() !== req.user._id.toString()) {
+            await createNotification(
+                targetOwnerId,
+                'comment',
+                `${req.user.name} commented on your ${targetType}`,
+                comment._id,
+                targetType
+            );
+        }
+    }
+
+    res.status(201).json({
+        message: "Comment added successfully",
+        comment
+    });
     } catch (err) {
         next(err);
     }

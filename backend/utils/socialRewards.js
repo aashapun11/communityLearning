@@ -39,3 +39,5 @@ const processFollowRewards = async (followerId, followingId) => {
 
     return rewards;
 };
+
+module.exports = { processFollowRewards };

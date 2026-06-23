@@ -6,6 +6,7 @@ const {getStartAndEndOfDay, isSameDay} = require('../utils/DateUtils');
 const {updateUserStreak} = require('../utils/streakHelper');
 const { processCheckInRewards } = require('../utils/checkInRewards');
 const { processCompletionRewards } = require('../utils/challengeRewards');
+const {createNotification} = require('../utils/notificationHelper');
 
 const createCheckIn = async (req, res, next) => {
     try {
@@ -237,6 +238,15 @@ const toggleUpvote = async (req, res, next) => {
         } else {
             // add upvote
             checkIn.upvotes.push(req.user._id);
+
+            // create notification
+            await createNotification(
+                checkIn.userId,
+                'upvote',
+                `${req.user.name} upvoted your check-in`,
+                checkIn._id,
+                'CheckIn'
+            );
         }
 
         await checkIn.save();
