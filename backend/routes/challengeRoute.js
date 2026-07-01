@@ -9,7 +9,7 @@ const optionalAuth = require('../middleware/optionalMiddleware');
 router.post('/createChallenge', protect, createChallengeValidator, validate, createChallenge);
 router.patch('/updateChallenge/:id', protect, updateChallengeValidator, validate, updateChallenge);
 router.delete('/deleteChallenge/:id', protect, deleteChallenge);
-router.get('/getChallenges', protect, getChallenges);
+router.get('/getChallenges', getChallenges);
 router.get('/getChallengeById/:id', optionalAuth, getChallengeById);
 router.post('/joinChallenge/:id', protect, joinChallenge);
 router.delete('/leaveChallenge/:id', protect, leaveChallenge);

@@ -1,6 +1,6 @@
 const Comment = require('../models/CommentModel');
 const CheckIn = require('../models/CheckInModel');
-// const Post = require('../models/PostModel');
+const Post = require('../models/PostModel');
 const AppError = require('../utils/AppError');
 const {createNotification} = require('../utils/notificationHelper');
 
