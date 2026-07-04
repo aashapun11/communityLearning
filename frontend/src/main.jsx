@@ -7,6 +7,7 @@ import { Provider } from './components/ui/provider'
 import { AuthProvider } from './context/AuthContext';
 // import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
+import Register from './components/Register';
 
 
 
@@ -14,6 +15,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App/>}> 
     <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/register" element={<Register />} />
     </Route>
     
   )

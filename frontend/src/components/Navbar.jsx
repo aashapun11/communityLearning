@@ -7,7 +7,7 @@ function Navbar() {
       <nav>
         <ul>
           <li>
-            <Link to="/dashboard">Dashboard Navbarrrrrrr.....</Link>
+            <Link to="/dashboard"></Link>
           </li>
         </ul>
       </nav>

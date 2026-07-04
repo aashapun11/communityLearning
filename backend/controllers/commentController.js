@@ -1,6 +1,6 @@
 const Comment = require('../models/CommentModel');
 const CheckIn = require('../models/CheckInModel');
-const Post = require('../models/PostModel');
+// const Post = require('../models/PostModel');
 const AppError = require('../utils/AppError');
 const {createNotification} = require('../utils/notificationHelper');
 
@@ -15,10 +15,10 @@ const addComment = async (req, res, next) => {
         const checkIn = await CheckIn.findById(targetId).select('userId');
         targetOwnerId = checkIn.userId;
     } 
-    else if (targetType === 'Post') {
-        const post = await Post.findById(targetId).select('userId');
-        targetOwnerId = post.userId;
-    }
+    // else if (targetType === 'Post') {
+    //     const post = await Post.findById(targetId).select('userId');
+    //     targetOwnerId = post.userId;
+    // }
 
     // if reply → check parent comment exists
     let parentComment = null;

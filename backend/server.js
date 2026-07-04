@@ -3,6 +3,13 @@ const app = express();
 const port =  process.env.PORT || 3000;
 const dotenv = require('dotenv');
 dotenv.config();
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
