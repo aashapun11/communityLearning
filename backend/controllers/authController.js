@@ -7,10 +7,21 @@ const generateToken = require('../utils/generateToken');
     try {
         const { name, email, username, password, timezone} = req.body;
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({
+            $or: [
+                { email },
+                { username }
+            ]
+        });
 
         if (existingUser) {
-            return next(new AppError("User already exists", 400));
+        if (existingUser.email === email) {
+            return next(new AppError("Email already exists", 400));
+        }
+
+        if (existingUser.username === username) {
+            return next(new AppError("Username already exists", 400));
+        }
         }
 
         const newUser = new User({ name, email, username, password, timezone });

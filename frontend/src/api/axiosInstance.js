@@ -14,16 +14,23 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
-// handle expired/invalid token globally
+// Handle responses
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
+  (response) => response,
+
+  (error) => {
+    // Token expired or unauthorized
+    if (
+      error.response?.status === 401 &&
+      error.config.url !== "/auth/login"
+    ) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     }
+
+    return Promise.reject(error);
+  }
 );
+
 
 export default axiosInstance;
