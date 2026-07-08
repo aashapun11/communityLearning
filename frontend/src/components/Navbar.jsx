@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext} from "react";
 import {
   Box,
   Flex,
@@ -7,13 +7,17 @@ import {
   Text,
   Image,
   Link,
+
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { IconButton } from '@chakra-ui/react';
 import { Spin as Hamburger } from 'hamburger-react';
+import { AuthContext } from "../context/AuthContext";
+import UserProfileMenu from "./UserProfileMenu";
 
 function Navbar() {
   const [isOpen, setOpen] = useState(false);
+  const { user, logout} = useContext(AuthContext);
 
   return (
     <Box
@@ -58,17 +62,6 @@ function Navbar() {
           gap={8}
           display={{ base: "none", md: "flex" }}
         >
-          <Link
-            as={RouterLink}
-            to="/"
-            color="gray.700"
-            _hover={{
-              color: "#0F766E",
-              textDecoration: "none",
-            }}
-          >
-            Home
-          </Link>
 
           <Link
             as={RouterLink}
@@ -94,8 +87,27 @@ function Navbar() {
             About
           </Link>
 
-        {/* Guest Buttons */}
+          {user ? (
+            <HStack gap={3}>
+              <Link
+            as={RouterLink}
+            to="/notifications"
+            color="gray.700"
+            _hover={{
+              color: "#0F766E",
+              textDecoration: "none",
+            }}
+          >
+            Notifications
+          </Link>
+
+              <UserProfileMenu user={user} logout={logout} />
+  
+            </HStack>
+          ) : (
+
         <HStack gap={3}>
+          
           <Button
             as={RouterLink}
             to="/login"
@@ -120,6 +132,7 @@ function Navbar() {
             Register
           </Button>
         </HStack>
+          )}
         </HStack>
       </Flex>
 
@@ -181,6 +194,25 @@ function Navbar() {
         About
       </Link>
 
+      {user ? (
+        <>
+              <Link
+            as={RouterLink}
+            to="/notifications"
+            color="gray.700"
+            _hover={{
+              color: "#0F766E",
+              textDecoration: "none",
+            }}
+          >
+            Notifications
+          </Link>
+
+              <UserProfileMenu user={user} logout={logout} />
+              </>
+          ) : (
+        <>
+
       <Button
         as={RouterLink}
         to="/login"
@@ -203,6 +235,8 @@ function Navbar() {
       >
         Register
       </Button>
+        </>
+      )}
     </Flex>
   </Box>
 )}
@@ -211,3 +245,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

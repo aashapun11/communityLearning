@@ -10,6 +10,8 @@ import { AuthProvider } from './context/AuthContext';
 import Dashboard from './components/Dashboard';
 import Register from './components/Register';
 import Login from './components/Login';
+import About from './components/About';
+import Notification from './components/Notification';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,6 +19,8 @@ const router = createBrowserRouter(
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/register" element={<Register />} />
     <Route path="/login" element={<Login />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/notifications" element={<Notification />} />
     
     </Route>
   )
