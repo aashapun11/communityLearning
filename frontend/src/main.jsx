@@ -12,6 +12,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import About from './components/About';
 import Notification from './components/Notification';
+import Challenges from './pages/Challenges';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
     <Route path="/login" element={<Login />} />
     <Route path="/about" element={<About />} />
     <Route path="/notifications" element={<Notification />} />
+    <Route path="/challenges" element={<Challenges />} />
     
     </Route>
   )

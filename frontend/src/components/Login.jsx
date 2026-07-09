@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Flex,
@@ -14,11 +14,13 @@ import { toaster } from "../components/ui/toaster";
 import {useNavigate, Link as RouterLink } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import LeftSide from "./auth/LeftSide";
+import { AuthContext } from "../context/AuthContext";
 function Login() {
   const [formData, setFormData] = React.useState({
     emailOrUsername: "",
     password: "",
   });
+  const { login } = useContext(AuthContext);
 
 const navigate = useNavigate();
   const handleChange = (e) => {
@@ -31,9 +33,9 @@ const navigate = useNavigate();
     e.preventDefault();
     try {
       const result = await axiosInstance.post("/auth/login", formData);
-      localStorage.setItem("token", result.data.token);
-      localStorage.setItem("user", JSON.stringify(result.data.user));
-
+      const { user, token } = result.data;
+      login(user, token);
+      
       toaster.create({
         title: "Login successful.",
         description: "Welcome back!",

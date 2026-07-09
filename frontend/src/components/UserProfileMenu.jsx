@@ -7,9 +7,14 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import {useNavigate, Link as RouterLink } from "react-router-dom";
 
 function UserProfileMenu({ user, logout }) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
   return (
     <Menu.Root positioning={{ placement: "bottom-end" }}>
       <Menu.Trigger asChild>
@@ -59,7 +64,7 @@ function UserProfileMenu({ user, logout }) {
             <Menu.Item
               value="logout"
               color="red.500"
-              onSelect={logout}
+              onClick={handleLogout}
             >
               Logout
             </Menu.Item>
