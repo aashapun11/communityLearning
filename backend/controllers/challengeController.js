@@ -139,9 +139,13 @@ const getChallenges = async (req, res, next) => {
             .limit(Number(limit));
 
         const total = await Challenge.countDocuments(filter);
+        const formattedChallenges = challenges.map(challenge => ({
+        ...challenge.toObject(),
+        totalParticipants: challenge.participants.length,
+        }));
 
         res.status(200).json({
-            challenges,
+            challenges: formattedChallenges,
             pagination: {
                 total,
                 page: Number(page),

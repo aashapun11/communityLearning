@@ -11,10 +11,12 @@ function ChallengeCard({ challenge }) {
   return (
     <Box
       borderWidth="1px"
+      color="#0F172A"
       rounded="xl"
+      borderColor="#E2E8F0"
       p={6}
       shadow="sm"
-      bg="white"
+      bg="#F8FAFC"
       _hover={{
         shadow: "lg",
         transform: "translateY(-4px)",
@@ -23,7 +25,7 @@ function ChallengeCard({ challenge }) {
     >
       <Stack gap={4}>
         <HStack justify="space-between">
-          <Badge colorPalette="teal">
+          <Badge textTransform="capitalize">
             {challenge.topic}
           </Badge>
 
@@ -35,6 +37,7 @@ function ChallengeCard({ challenge }) {
                 ? "orange"
                 : "red"
             }
+            textTransform="capitalize"
           >
             {challenge.difficulty}
           </Badge>
@@ -54,7 +57,7 @@ function ChallengeCard({ challenge }) {
           </Text>
 
           <Text fontSize="sm">
-            👥 {challenge.participants}
+            👥 {challenge.totalParticipants}
           </Text>
         </HStack>
 
