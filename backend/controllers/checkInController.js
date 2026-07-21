@@ -10,7 +10,8 @@ const {createNotification} = require('../utils/notificationHelper');
 
 const createCheckIn = async (req, res, next) => {
     try {
-        const { challengeId, note, mediaUrl } = req.body;
+        const { challengeId } = req.params; 
+        const { note, mediaUrl } = req.body;
 
         const challenge = await Challenge.findById(challengeId);
 

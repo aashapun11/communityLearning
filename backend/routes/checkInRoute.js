@@ -5,7 +5,7 @@ const { createCheckInValidator, editCheckInValidator } = require('../validators/
 const validate = require('../middleware/validate');
 const protect = require('../middleware/authMiddleware');
 
-router.post('/createCheckIn', protect, createCheckInValidator, validate, createCheckIn);
+router.post('/createCheckIn/:challengeId', protect, createCheckInValidator, validate, createCheckIn);
 router.patch('/editCheckIn/:id', protect, editCheckInValidator, validate, editCheckIn);
 router.delete('/deleteCheckIn/:id', protect, deleteCheckIn);
 router.get('/challengeFeed/:id', getChallengeFeed); // public

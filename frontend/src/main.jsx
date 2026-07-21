@@ -13,6 +13,10 @@ import Login from './components/Login';
 import About from './components/About';
 import Notification from './components/Notification';
 import Challenges from './pages/Challenges';
+import ChallengeDetails from './pages/ChallengeDetails';
+import CheckIn from './components/CheckIn';
+import CreateChallenge from './pages/CreateChallenge';
+import UpdateChallenge from './pages/UpdateChallenge';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,7 +27,11 @@ const router = createBrowserRouter(
     <Route path="/about" element={<About />} />
     <Route path="/notifications" element={<Notification />} />
     <Route path="/challenges" element={<Challenges />} />
-    
+    <Route path="/challenges/:challengeId" element={<ChallengeDetails />} /> 
+
+    <Route path="/checkIns/:challengeId" element={<CheckIn />} />
+    <Route path="/createChallenge" element={<CreateChallenge />} />
+    <Route path="/updateChallenge/:challengeId" element={<UpdateChallenge />} />
     </Route>
   )
 )

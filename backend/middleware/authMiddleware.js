@@ -6,7 +6,7 @@ const protect = async (req, res, next) => {
         let token = req.headers.authorization;
 
         if (!token || !token.startsWith('Bearer ')) {
-            return res.status(401).json({ message: "Not authorized, no token" });
+            return res.status(401).json({ message: "Not authorized, Please Login!" });
         }
 
         token = token.split(' ')[1]; // extract token from "Bearer <token>"

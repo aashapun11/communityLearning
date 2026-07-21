@@ -11,7 +11,7 @@ const createChallenge = async (req, res, next) => {
         // calculate endDate automatically
         const start = new Date(startDate);
         const end = new Date(start);
-        end.setDate(start.getDate() + duration);
+        end.setDate(end.getDate() + Number(duration) - 1); // -1 because endDate is inclusive (duration);
 
         const challenge = new Challenge({
             title,
@@ -171,21 +171,42 @@ const getChallengeById = async (req, res, next) => {
         }
 
         const today = new Date();
+        const DAY = 1000 * 60 * 60 * 24;
 
-        const daysPassed = Math.max(0,
-            Math.floor((today - challenge.startDate) / (1000 * 60 * 60 * 24))
-        );
-        const daysRemaining = Math.max(0,
-            Math.floor((challenge.endDate - today) / (1000 * 60 * 60 * 24))
-        );
-        const progressPercent = Math.min(100,
-            Math.floor((daysPassed / challenge.duration) * 100)
-        );
+        let completedDays = 0;
+        let remainingDays = challenge.duration;
+        let progressPercent = 0;
+        let status = "";
 
-        let status;
-        if (today < challenge.startDate) status = "upcoming";
-        else if (today > challenge.endDate) status = "completed";
-        else status = "ongoing";
+        if (today < challenge.startDate) {
+            status = "upcoming";
+
+            completedDays = 0;
+            remainingDays = challenge.duration;
+            progressPercent = 0;
+
+        } else if (today > challenge.endDate) {
+            status = "completed";
+
+            completedDays = challenge.duration;
+            remainingDays = 0;
+            progressPercent = 100;
+
+        } else {
+            status = "ongoing";
+
+            completedDays =
+                Math.floor((today - challenge.startDate) / DAY) + 1;
+
+            completedDays = Math.min(completedDays, challenge.duration);
+
+            remainingDays = challenge.duration - completedDays;
+
+            progressPercent = Math.floor(
+                (completedDays / challenge.duration) * 100
+            );
+        }
+
 
          // user progress — only if logged in
         let userProgress = null;
@@ -215,8 +236,8 @@ const getChallengeById = async (req, res, next) => {
             challenge,
             stats: {
                 totalParticipants: challenge.participants.length,
-                daysPassed,
-                daysRemaining,
+                completedDays,
+                remainingDays,
                 progressPercent,
                 status
             },

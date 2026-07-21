@@ -6,10 +6,12 @@ import {
   Text,
   Flex, 
   Input,
+  Button
 } from "@chakra-ui/react";
 import ChallengeCard from "../components/ChallengeCard";
 import axiosInstance from "../api/axiosInstance";
 import { colors } from "../theme/colors";
+import { Link as RouterLink } from "react-router";
  function Challenges() {
   const [challenges, setChallenges] = useState([]);  
   const [search, setSearch] = useState("");
@@ -39,13 +41,27 @@ import { colors } from "../theme/colors";
   }, [debouncedSearch, topic, difficulty]);
   return (
     <Container maxW="7xl" py={10}>
-      <Heading mb={2} color="#0F172A" fontSize="3xl" fontWeight="bold">
-        Explore Challenges
-      </Heading>
+      <Flex
+  justify="space-between"
+  align="center"
+  mb={8}
+>
+  <Heading color={colors.text}>
+    Challenges
+  </Heading>
 
-      <Text color="gray.600" mb={8}>
-        Join a challenge and stay consistent with your learning.
-      </Text>
+  <Button
+    as={RouterLink}
+    to="/createChallenge"
+    bg={colors.primary}
+    color="white"
+    _hover={{
+      bg: colors.primaryHover,
+    }}
+  >
+    + Create Challenge
+  </Button>
+</Flex>
 
      <Flex
   direction={{ base: "column", md: "row" }}

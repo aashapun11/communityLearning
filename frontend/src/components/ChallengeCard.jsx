@@ -6,8 +6,9 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-
+import { useNavigate } from "react-router-dom";
 function ChallengeCard({ challenge }) {
+  const navigate = useNavigate();
   return (
     <Box
       borderWidth="1px"
@@ -61,9 +62,12 @@ function ChallengeCard({ challenge }) {
           </Text>
         </HStack>
 
+{/* Navigation to challenge details page can be added here, for now it's just a button */}
+ 
         <Button
           colorPalette="teal"
           w="full"
+          onClick={() => navigate(`/challenges/${challenge._id}`)}
         >
           View Challenge
         </Button>

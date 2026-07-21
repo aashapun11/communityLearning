@@ -14,23 +14,26 @@ import {colors} from "../theme/colors";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import {useNavigate, Link as RouterLink } from "react-router-dom";
 
 function ChallengeDetails() {
   const [challenge, setChallenge] = useState({});
   const [stats, setStats] = useState({});
   const [userProgress, setUserProgress] = useState(null);
   const { challengeId } = useParams();
+  const [isCreator, setIsCreator] = useState(false);
+const user = JSON.parse(localStorage.getItem("user"));
+const currentUserId = user?.id;
 
  useEffect(() => {
+
     async function fetchChallengeDetails() {
       try {
         const response = await axiosInstance.get(`/challenges/getChallengeById/${challengeId}`);
         setChallenge(response.data.challenge);
+        setIsCreator(response.data.challenge.createdBy._id === currentUserId);
         setStats(response.data.stats);
-        console.log("Challenge Details:", response.data.stats);
         setUserProgress(response.data.userProgress);
-        console.log("User Progress:", response.data.userProgress);
-        return;
       } catch (error) {
         console.error("Error fetching challenge details:", error);
       }
@@ -45,7 +48,21 @@ function ChallengeDetails() {
 
         {/* Header */}
         <Stack gap={4} mb={8}>
-          <Heading>{challenge.title|| "No Title"}</Heading>
+          <Flex justify="space-between" align="center" mb={8}>
+  <Heading>{challenge.title}</Heading>
+
+  {isCreator && (
+    <Button
+      as={RouterLink}
+      to={`/updateChallenge/${challenge._id}`}
+      bg={colors.primary}
+      color="white"
+      _hover={{ bg: colors.primaryHover }}
+    >
+      Edit Challenge
+    </Button>
+  )}
+</Flex>
 
           <Flex gap={3} wrap="wrap">
             <Badge colorPalette="teal">
@@ -189,21 +206,35 @@ function ChallengeDetails() {
         {userProgress.isCompleted ? "Completed" : "In Progress"}
       </Text>
     </Text>
+    <Button
+     as={RouterLink}
+      to={`/checkIns/${challenge._id}`}
+      mt={4}
+      w="full"
+      bg={colors.primary}
+      _hover={{ bg: colors.primaryHover }}    
+      >
+      Continue Challenge
+    </Button>
   </Stack>
 ) : (
+  <Box>
   <Text color="gray.500">
     You haven't joined this challenge yet.
   </Text>
-  
-)}
-<Button
+  <Button
       mt={4}
       w="full"
       bg={colors.primary}
       _hover={{ bg: colors.primaryHover }}
+    
     >
-      Continue Challenge
+      Will Lead to Join Challenge
     </Button>
+    </Box>
+  
+)}
+
             
           </Box>
 
