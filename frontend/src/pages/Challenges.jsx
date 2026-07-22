@@ -12,12 +12,15 @@ import ChallengeCard from "../components/ChallengeCard";
 import axiosInstance from "../api/axiosInstance";
 import { colors } from "../theme/colors";
 import { Link as RouterLink } from "react-router";
+import Pagination from "../components/Pagination";
  function Challenges() {
   const [challenges, setChallenges] = useState([]);  
   const [search, setSearch] = useState("");
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
   const timer = setTimeout(() => {
@@ -27,18 +30,26 @@ import { Link as RouterLink } from "react-router";
   return () => clearTimeout(timer);
 }, [search]);
 
-  useEffect(() => {
-    async function fetchChallenges() {
-      try{
-        const response = await  axiosInstance.get(`/challenges/getChallenges?search=${debouncedSearch}&topic=${topic}&difficulty=${difficulty}`);
-        setChallenges(response.data.challenges);
-      } catch (error) {
-        console.error("Error fetching challenges:", error);
-      }
-    }
-    fetchChallenges();
+  // reset to page 1 whenever filters change
+useEffect(() => {
+  setPage(1);
+}, [debouncedSearch, topic, difficulty]);
 
-  }, [debouncedSearch, topic, difficulty]);
+useEffect(() => {
+  async function fetchChallenges() {
+    try {
+      const response = await axiosInstance.get(
+        `/challenges/getChallenges?search=${debouncedSearch}&topic=${topic}&difficulty=${difficulty}&page=${page}&limit=10`
+      );
+      setChallenges(response.data.challenges);
+      setTotalPages(response.data.pagination.pages); // backend must return this
+    } catch (error) {
+      console.error("Error fetching challenges:", error);
+    }
+  }
+  fetchChallenges();
+}, [debouncedSearch, topic, difficulty, page]);
+
   return (
     <Container maxW="7xl" py={10}>
       <Flex
@@ -111,6 +122,7 @@ import { Link as RouterLink } from "react-router";
     No challenges found.
   </Text>
 ) : (
+  <>
   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
     {challenges.map((challenge) => (
       <ChallengeCard
@@ -119,6 +131,9 @@ import { Link as RouterLink } from "react-router";
       />
     ))}
   </SimpleGrid>
+       <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+       </>
+
 )}
     </Container>
   );

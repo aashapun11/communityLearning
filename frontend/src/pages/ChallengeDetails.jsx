@@ -15,6 +15,7 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import {useNavigate, Link as RouterLink } from "react-router-dom";
+import { toaster } from "../components/ui/toaster";
 
 function ChallengeDetails() {
   const [challenge, setChallenge] = useState({});
@@ -25,21 +26,62 @@ function ChallengeDetails() {
 const user = JSON.parse(localStorage.getItem("user"));
 const currentUserId = user?.id;
 
- useEffect(() => {
+const fetchChallengeDetails = async () => {
+  try {
+    const response = await axiosInstance.get(`/challenges/getChallengeById/${challengeId}`);
+    setChallenge(response.data.challenge);
+    setIsCreator(response.data.challenge.createdBy._id === currentUserId);
+    setStats(response.data.stats);
+    setUserProgress(response.data.userProgress);
+  } catch (error) {
+    toaster.create({
+      title: "Error",
+      description: error.response.data.message || "Failed to fetch challenge details.",
+      type: "error"
+    })
+  }
+};
 
-    async function fetchChallengeDetails() {
-      try {
-        const response = await axiosInstance.get(`/challenges/getChallengeById/${challengeId}`);
-        setChallenge(response.data.challenge);
-        setIsCreator(response.data.challenge.createdBy._id === currentUserId);
-        setStats(response.data.stats);
-        setUserProgress(response.data.userProgress);
-      } catch (error) {
-        console.error("Error fetching challenge details:", error);
-      }
-    }
+ useEffect(() => {
     fetchChallengeDetails();
   }, [challengeId]);
+
+  const handleJoin = async () => {
+  try {
+   await axiosInstance.post(`/challenges/joinChallenge/${challengeId}`);   
+   fetchChallengeDetails();
+   toaster.create({
+    title: "Challenge joined.",
+    description: "You have successfully joined the challenge.",
+    type: "success"
+   })
+  } catch (error) {
+    toaster.create({
+      title: "Error",
+      description: error.response.data.message || "Failed to join challenge.",
+      type: "error"
+    })
+  }
+
+};
+
+const handleLeave = async () => {
+  try {
+   await axiosInstance.delete(`/challenges/leaveChallenge/${challengeId}`);   
+   fetchChallengeDetails();
+   toaster.create({
+    title: "Challenge left.",
+    description: "You have successfully left the challenge.",
+    type: "success"
+   })
+  } catch (error) {
+    toaster.create({
+      title: "Error",
+      description: error.response.data.message || "Failed to leave challenge.",
+      type: "error"
+    })
+  }
+};
 
 
   return (
@@ -121,7 +163,7 @@ const currentUserId = user?.id;
       </Flex>
 
       <Flex justify="space-between" align="center">
-        <Text color="gray.600">Challenge Progress</Text>
+        <Text color="gray.600">Completion Percentage</Text>
         <Text fontWeight="bold" color="teal.600">
           {stats.progressPercent || 0}%
         </Text>
@@ -164,7 +206,7 @@ const currentUserId = user?.id;
       📈 Your Progress
     </Heading>
 
-          {userProgress ? (
+    {userProgress?.isJoined ? (
   <Stack gap={5}>
     <Text color="gray.600">
       You have completed
@@ -206,16 +248,22 @@ const currentUserId = user?.id;
         {userProgress.isCompleted ? "Completed" : "In Progress"}
       </Text>
     </Text>
-    <Button
-     as={RouterLink}
-      to={`/checkIns/${challenge._id}`}
-      mt={4}
-      w="full"
-      bg={colors.primary}
-      _hover={{ bg: colors.primaryHover }}    
-      >
+   {(stats.isCompleted || stats.progressPercent === 100) ? (
+  <Box>
+    <Button mt={4} w="full" disabled bg={colors.primary}>
+      ✅ Challenge Completed
+    </Button>
+  </Box>
+) : (
+  <Box>
+    <Button as={RouterLink} to={`/checkIns/${challenge._id}`} mt={4} w="full" bg={colors.primary} _hover={{ bg: colors.primaryHover }}>
       Continue Challenge
     </Button>
+    <Button mt={2} variant="ghost" size="sm" colorPalette="red" onClick={handleLeave}>
+      Leave Challenge
+    </Button>
+  </Box>
+)}
   </Stack>
 ) : (
   <Box>
@@ -224,17 +272,17 @@ const currentUserId = user?.id;
   </Text>
   <Button
       mt={4}
+      onClick={handleJoin}
       w="full"
       bg={colors.primary}
       _hover={{ bg: colors.primaryHover }}
     
     >
-      Will Lead to Join Challenge
+      Join Challenge
     </Button>
     </Box>
   
 )}
-
             
           </Box>
 
