@@ -17,6 +17,9 @@ import ChallengeDetails from './pages/ChallengeDetails';
 import CheckIn from './components/CheckIn';
 import CreateChallenge from './pages/CreateChallenge';
 import UpdateChallenge from './pages/UpdateChallenge';
+import ChallengesCategory from './pages/ChallengesCategory'
+import CategoryDetails from './components/CategoryDetails';
+import TopicChallenges from './pages/TopicChallenges'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,8 +29,12 @@ const router = createBrowserRouter(
     <Route path="/login" element={<Login />} />
     <Route path="/about" element={<About />} />
     <Route path="/notifications" element={<Notification />} />
-    <Route path="/challenges" element={<Challenges />} />
+    {/* <Route path="/challenges" element={<Challenges />} /> */}
+    <Route path="/challengesCategory" element={<ChallengesCategory />} />
     <Route path="/challenges/:challengeId" element={<ChallengeDetails />} /> 
+    <Route path="/categories/:slug" element={<CategoryDetails />} />
+    <Route path="/getChallengesByTopic/:topic" element={<TopicChallenges />} />
+
 
     <Route path="/checkIns/:challengeId" element={<CheckIn />} />
     <Route path="/createChallenge" element={<CreateChallenge />} />

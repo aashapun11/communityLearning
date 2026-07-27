@@ -11,6 +11,7 @@ function ChallengeCard({ challenge }) {
   const navigate = useNavigate();
   return (
     <Box
+      cursor="pointer"
       borderWidth="1px"
       color="#0F172A"
       rounded="xl"

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, joinChallenge, leaveChallenge } = require('../controllers/challengeController');
+const { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById,
+     joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory } = require('../controllers/challengeController');
 const { createChallengeValidator, updateChallengeValidator } = require('../validators/challengeValidator');
 const validate = require('../middleware/validate');
 const protect = require('../middleware/authMiddleware');
@@ -13,5 +14,10 @@ router.get('/getChallenges', getChallenges);
 router.get('/getChallengeById/:id', optionalAuth, getChallengeById);
 router.post('/joinChallenge/:id', protect, joinChallenge);
 router.delete('/leaveChallenge/:id', protect, leaveChallenge);
+
+// router.get('/getTopics', getTopics);
+router.get('/getChallengesCategory', getChallengesCategory);
+router.get("/getTopicsByCategory/:slug", getTopicsByCategory);
+router.get("/getChallengesByTopic", getChallenges);
 
 module.exports = router;

@@ -14,7 +14,6 @@ import { IconButton } from '@chakra-ui/react';
 import { Spin as Hamburger } from 'hamburger-react';
 import { AuthContext } from "../context/AuthContext";
 import UserProfileMenu from "./UserProfileMenu";
-
 function Navbar() {
   const [isOpen, setOpen] = useState(false);
   const { user, logout} = useContext(AuthContext);
@@ -65,7 +64,7 @@ function Navbar() {
 
           <Link
             as={RouterLink}
-            to="/challenges"
+            to="/challengesCategory"
             color="gray.700"
             _hover={{
               color: "#0F766E",
@@ -176,7 +175,7 @@ function Navbar() {
    {/* Logo */}
       <Link
         as={RouterLink}
-        to="/challenges"
+        to="/challengesCategory"
         color="gray.700"
         fontWeight="medium"
         onClick={() => setOpen(false)}

@@ -2,11 +2,14 @@ const Challenge = require('../models/ChallengeModel');
 const CheckIn = require('../models/CheckInModel');
 const AppError = require('../utils/AppError');
 const { processJoinRewards } = require('../utils/challengeRewards');
+const {topicCategories} = require('../constants/topicCategories');
+
 
 
 const createChallenge = async (req, res, next) => {
     try {
         const { title, topic, description, difficulty, duration, startDate, isPublic } = req.body;
+
 
         // calculate endDate automatically
         const start = new Date(startDate);
@@ -117,47 +120,90 @@ const deleteChallenge = async (req, res, next) => {
     }
 };
 
-const getChallenges = async (req, res, next) => {
-    try {
-        const { topic, difficulty, search, page = 1, limit = 10 } = req.query;
-
-        // build filter
-        const filter = { isPublic: true, isActive: true };
-
-        if (topic) filter.topic = topic;
-        if (difficulty) filter.difficulty = difficulty;
-        if (search) {
-            filter.title = { $regex: search, $options: 'i' }; // case insensitive
-        }
-
-        const skip = (page - 1) * limit;
-
-        const challenges = await Challenge.find(filter)
-            .populate('createdBy', 'name avatar')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(Number(limit));
-
-        const total = await Challenge.countDocuments(filter);
-        const formattedChallenges = challenges.map(challenge => ({
-        ...challenge.toObject(),
-        totalParticipants: challenge.participants.length,
-        }));
-
-        res.status(200).json({
-            challenges: formattedChallenges,
-            pagination: {
-                total,
-                page: Number(page),
-                pages: Math.ceil(total / limit)
-            }
-        });
-
-    } catch (err) {
-        next(err);
-    }
+const getTopics = async (req, res, next) => {
+  try {
+    
+    const topics = await Challenge.aggregate([
+      { $match: { isPublic: true, isActive: true } },
+      { $group: { _id: "$topic", count: { $sum: 1 } } }
+    ]);
+    res.status(200).json({ topics });
+  } catch (err) {
+    next(err);
+  }
 };
 
+// const getChallenges = async (req, res, next) => {
+//     try {
+//         const { topic, difficulty, search, page = 1, limit = 10 } = req.query;
+
+//         // build filter
+//         const filter = { isPublic: true, isActive: true };
+
+//         if (topic) filter.topic = topic;
+//         if (difficulty) filter.difficulty = difficulty;
+//         if (search) {
+//             filter.title = { $regex: search, $options: 'i' }; // case insensitive
+//         }
+
+//         const skip = (page - 1) * limit;
+
+//         const challenges = await Challenge.find(filter)
+//             .populate('createdBy', 'name avatar')
+//             .sort({ createdAt: -1 })
+//             .skip(skip)
+//             .limit(Number(limit));
+
+//         const total = await Challenge.countDocuments(filter);
+//         const formattedChallenges = challenges.map(challenge => ({
+//         ...challenge.toObject(),
+//         totalParticipants: challenge.participants.length,
+//         }));
+
+//         res.status(200).json({
+//             challenges: formattedChallenges,
+//             pagination: {
+//                 total,
+//                 page: Number(page),
+//                 pages: Math.ceil(total / limit)
+//             }
+//         });
+
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
+const getChallenges = async (req, res, next) => {
+  try {
+    const { topic } = req.query;
+
+    // Build filter
+    const filter = {
+      isPublic: true,
+      isActive: true,
+    };
+
+    // Filter by topic if provided
+    if (topic) {
+      filter.topic = topic.trim().toLowerCase();
+    }
+
+    // Fetch challenges
+    const challenges = await Challenge.find(filter)
+      .populate("createdBy", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      totalChallenges: challenges.length,
+      topic: topic || null,
+      challenges,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 const getChallengeById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -342,5 +388,30 @@ const leaveChallenge = async (req, res, next) => {
         next(err);
     }
 };
+const getChallengesCategory = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      categories: topicCategories,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
-module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, joinChallenge, leaveChallenge };
+const getTopicsByCategory  = (req, res) => {
+  const { slug } = req.params;
+
+  const topics = topicCategories[slug];
+
+  if (!topics) {
+    return res.status(404).json({
+      message: "Category not found"
+    });
+  }
+
+  res.status(200).json({
+    topics
+  });
+};
+
+module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory };

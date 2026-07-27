@@ -12,15 +12,15 @@ Text,
   Switch,
   Textarea,
 } from "@chakra-ui/react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import axiosInstance from "../api/axiosInstance";
 import { colors } from "../theme/colors";
 import { toaster } from "../components/ui/toaster";
+import TopicSelect from "../components/TopicSelect"; 
 
 function CreateChallenge() {
   const navigate = useNavigate();
-  const inputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -34,7 +34,7 @@ function CreateChallenge() {
 
   const [loading, setLoading] = useState(false);
 
-  function handleChange(e) {
+  function handleChange(e) {    
     const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
@@ -113,23 +113,8 @@ function CreateChallenge() {
                 />
               </Field.Root>
 
-              <Field.Root color={colors.text} required>
-                <Field.Label>Topic</Field.Label>
-
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    name="topic"
-                    value={formData.topic}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Topic</option>
-                    <option value="javascript">javascript</option>
-                    <option value="databases">databases</option>
-                    <option value="fullstack">Full Stack</option>
-                    <option value="dsa">DSA</option>
-                  </NativeSelect.Field>
-                </NativeSelect.Root>
-              </Field.Root>
+             
+              <TopicSelect name="topic" value={formData.topic} onChange={handleChange} />
 
               <Field.Root color={colors.text} required>
                 <Field.Label>Difficulty</Field.Label>

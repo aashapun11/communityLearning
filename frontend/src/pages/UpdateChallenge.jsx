@@ -18,6 +18,7 @@ import axiosInstance from "../api/axiosInstance";
 import { colors } from "../theme/colors";
 import { toaster } from "../components/ui/toaster";
 import { useParams } from "react-router";
+import TopicSelect from "../components/TopicSelect";
 
 function UpdateChallenge() {
   const navigate = useNavigate();
@@ -147,23 +148,12 @@ function UpdateChallenge() {
                 />
               </Field.Root>
 
-              <Field.Root color={colors.text} required>
-                <Field.Label>Topic</Field.Label>
-
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    name="topic"
-                    value={formData.topic}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Topic</option>
-                    <option value="javascript">javascript</option>
-                    <option value="databases">databases</option>
-                    <option value="fullstack">Full Stack</option>
-                    <option value="dsa">DSA</option>
-                  </NativeSelect.Field>
-                </NativeSelect.Root>
-              </Field.Root>
+              <TopicSelect
+                name="topic"
+                value={formData.topic}
+                onChange={handleChange}
+                required
+              />
 
               <Field.Root color={colors.text} required>
                 <Field.Label>Difficulty</Field.Label>

@@ -5,7 +5,7 @@ import {
   Container,
   Flex,
   Heading,
-  Progress,
+  HStack,
   SimpleGrid,
   Stack,
   Text,
@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import {useNavigate, Link as RouterLink } from "react-router-dom";
 import { toaster } from "../components/ui/toaster";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { LuPencil, LuTrash2 } from "react-icons/lu";
 
 function ChallengeDetails() {
   const [challenge, setChallenge] = useState({});
@@ -25,6 +27,7 @@ function ChallengeDetails() {
   const [isCreator, setIsCreator] = useState(false);
 const user = JSON.parse(localStorage.getItem("user"));
 const currentUserId = user?.id;
+const navigate = useNavigate();
 
 const fetchChallengeDetails = async () => {
   try {
@@ -82,30 +85,94 @@ const handleLeave = async () => {
     })
   }
 };
+const handleDelete = async () => {
+    console.log("Delete clicked");
 
+   const confirmed = window.confirm(
+    "Are you sure you want to delete this challenge? This action cannot be undone."
+  );
+
+  if (!confirmed) return;
+  try {
+   await axiosInstance.delete(`/challenges/deleteChallenge/${challengeId}`);   
+   navigate("/challenges");
+   toaster.create({
+    title: "Challenge deleted.",
+    description: "You have successfully deleted the challenge.",
+    type: "success"
+   })
+  } catch (error) {
+     console.log(error);
+  console.log(error.response);
+    toaster.create({
+      title: "Error",
+      description: error.response.data.message || "Failed to delete challenge.",
+      type: "error"
+    })
+  }
+}
 
   return (
     <Box bg={colors.bg} color={colors.text} minH="100vh" py={10}>
       <Container maxW="7xl">
 
         {/* Header */}
-        <Stack gap={4} mb={8}>
-          <Flex justify="space-between" align="center" mb={8}>
-  <Heading>{challenge.title}</Heading>
+        <Stack gap={4} mb={4}>
+         <Flex
+  justify="space-between"
+  align={{ base: "start", md: "center" }}
+  direction={{ base: "column", md: "row" }}
+  gap={4}
+  mb={10}
+>
+  <Heading
+    size="2xl"
+    color={colors.text}
+    fontWeight="extrabold"
+    lineHeight="1.2"
+  >
+    {challenge.title}
+  </Heading>
 
   {isCreator && (
-    <Button
-      as={RouterLink}
-      to={`/updateChallenge/${challenge._id}`}
-      bg={colors.primary}
-      color="white"
-      _hover={{ bg: colors.primaryHover }}
-    >
-      Edit Challenge
-    </Button>
+    <HStack spacing={3}>
+     <Button
+  as={RouterLink}
+  to={`/updateChallenge/${challenge._id}`}
+  bg={colors.primary}
+  color="white"
+  size="lg"
+  borderRadius="xl"
+  _hover={{
+    bg: colors.primaryHover,
+    transform: "translateY(-2px)",
+  }}
+>
+  <HStack gap={2}>
+    <LuPencil />
+    <Text>Edit</Text>
+  </HStack>
+</Button>
+
+      <Button
+        bg="red.500"
+        color="white"
+        size="lg"
+        borderRadius="xl"
+        onClick={handleDelete}
+        _hover={{
+          bg: "red.600",
+          transform: "translateY(-2px)",
+        }}
+      >
+        <HStack gap={2}>
+          <LuTrash2 />
+          <Text>Delete</Text>
+        </HStack>
+      </Button>
+    </HStack>
   )}
 </Flex>
-
           <Flex gap={3} wrap="wrap">
             <Badge colorPalette="teal">
               {challenge.topic|| "No Topic" }
@@ -163,9 +230,24 @@ const handleLeave = async () => {
       </Flex>
 
       <Flex justify="space-between" align="center">
-        <Text color="gray.600">Completion Percentage</Text>
+        <Text color="gray.600">Starting Date</Text>
         <Text fontWeight="bold" color="teal.600">
-          {stats.progressPercent || 0}%
+          {new Date(challenge.startDate).toLocaleDateString("en-GB", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+}) || "Unknown"}
+        </Text>
+      </Flex>
+
+      <Flex justify="space-between" align="center">
+        <Text color="gray.600">Ending Date</Text>
+        <Text fontWeight="bold" color="teal.600">
+          {new Date(challenge.endDate).toLocaleDateString("en-GB", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+}) || "Unknown"}
         </Text>
       </Flex>
 
@@ -220,15 +302,7 @@ const handleLeave = async () => {
       {" "}days.
     </Text>
 
-   <Progress.Root
-  value={userProgress?.progressPercent || 0}
-  colorPalette="teal"
-  size="lg"
->
-  <Progress.Track rounded="full">
-    <Progress.Range />
-  </Progress.Track>
-</Progress.Root>
+  
 
     <Text>
       📊 Progress:

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Container,
   Heading,
@@ -50,6 +50,7 @@ useEffect(() => {
   fetchChallenges();
 }, [debouncedSearch, topic, difficulty, page]);
 
+
   return (
     <Container maxW="7xl" py={10}>
       <Flex
@@ -72,6 +73,7 @@ useEffect(() => {
   >
     + Create Challenge
   </Button>
+  
 </Flex>
 
      <Flex
@@ -88,30 +90,6 @@ useEffect(() => {
     color={colors.text}
   />
 
-  {/* Topic */}
-  <select
-    value={topic}
-    onChange={(e) => setTopic(e.target.value)}
-    flex="1"
-  >
-    <option value="">All Topics</option>
-    <option value="frontend">Frontend</option>
-    <option value="backend">Backend</option>
-    <option value="full-stack">Full Stack</option>
-    <option value="dsa">DSA</option>
-  </select>
-
-  {/* Difficulty */}
-  <select
-    value={difficulty}
-    onChange={(e) => setDifficulty(e.target.value)}
-    flex="1"
-  >
-    <option value="">All Difficulty</option>
-    <option value="beginner">Beginner</option>
-    <option value="intermediate">Intermediate</option>
-    <option value="advanced">Advanced</option>
-  </select>
 </Flex>
 {challenges.length === 0 ? (
   <Text
