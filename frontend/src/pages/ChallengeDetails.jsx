@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import {useNavigate, Link as RouterLink } from "react-router-dom";
 import { toaster } from "../components/ui/toaster";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 
 function ChallengeDetails() {

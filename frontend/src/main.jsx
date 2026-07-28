@@ -14,7 +14,7 @@ import About from './components/About';
 import Notification from './components/Notification';
 import Challenges from './pages/Challenges';
 import ChallengeDetails from './pages/ChallengeDetails';
-import CheckIn from './components/CheckIn';
+import CheckIn from './components/checkIns/CheckInForm';
 import CreateChallenge from './pages/CreateChallenge';
 import UpdateChallenge from './pages/UpdateChallenge';
 import ChallengesCategory from './pages/ChallengesCategory'

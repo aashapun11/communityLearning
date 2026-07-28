@@ -1,7 +1,8 @@
 const { body } = require('express-validator');
+const { param } = require('express-validator');
 
 const createCheckInValidator = [
-    body('challengeId')
+    param('challengeId')
         .notEmpty()
         .withMessage('Challenge ID is required'),
     body('note')

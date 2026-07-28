@@ -12,7 +12,6 @@ const createCheckIn = async (req, res, next) => {
     try {
         const { challengeId } = req.params; 
         const { note, mediaUrl } = req.body;
-
         const challenge = await Challenge.findById(challengeId);
 
         // challenge exists?
@@ -22,10 +21,10 @@ const createCheckIn = async (req, res, next) => {
 
         const today = new Date();
 
-        // challenge started?
-        if (today < challenge.startDate) {
-            return next(new AppError("Challenge has not started yet", 400));
-        }
+        // // challenge started?
+        // if (today < challenge.startDate) {
+        //     return next(new AppError("Challenge has not started yet", 400));
+        // }
 
         // challenge ended?
         if (today > challenge.endDate) {
@@ -58,7 +57,6 @@ const createCheckIn = async (req, res, next) => {
             mediaUrl,
             date: new Date()
         });
-
         await checkIn.save();
 
         //Update Streak after new checkin-in

@@ -12,7 +12,7 @@ const processCheckInRewards = async (userId, currentStreak) => {
    // base coin
     await User.findByIdAndUpdate(userId, { $inc: { coins: 1 } });
     rewards.totalCoinsEarned += 1;
-    rewards.coinBreakdown.push({ reason: 'Daily check-in', coins: 1 });
+    rewards.coinBreakdown.push({ reason: 'Daily check-in', description: 'Earned 1 coin', coins: 1 });
 
     // total check-ins
     const totalCheckIns = await CheckIn.countDocuments({ userId });
@@ -37,7 +37,8 @@ const processCheckInRewards = async (userId, currentStreak) => {
         rewards.totalCoinsEarned += result.coinsAwarded;
         rewards.coinBreakdown.push({ 
             reason: `${result.badge.title} Badge`, 
-            coins: result.coinsAwarded 
+            description: result.badge.description,
+            coins: result.coinsAwarded    
         });
     }
     }
@@ -58,6 +59,7 @@ const processCheckInRewards = async (userId, currentStreak) => {
         rewards.totalCoinsEarned += result.coinsAwarded;
         rewards.coinBreakdown.push({ 
             reason: `${result.badge.title} Badge`, 
+            description: result.badge.description,
             coins: result.coinsAwarded 
         });
        }
