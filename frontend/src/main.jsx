@@ -20,10 +20,12 @@ import UpdateChallenge from './pages/UpdateChallenge';
 import ChallengesCategory from './pages/ChallengesCategory'
 import CategoryDetails from './components/CategoryDetails';
 import TopicChallenges from './pages/TopicChallenges'
+import Landing from './components/Landing';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<App/>}> 
+    <Route path='/' element={<App />}> 
+    <Route index element={<Landing />} />
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/register" element={<Register />} />
     <Route path="/login" element={<Login />} />

@@ -1,9 +1,9 @@
 import React from 'react'
-
+import MainContent from './home/MainContent'
 function Landing() {
   return (
     <div>
-      <h1>Welcome to the Landing Page</h1>
+      <MainContent />
     </div>
   )
 }

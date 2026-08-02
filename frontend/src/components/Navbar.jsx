@@ -7,13 +7,15 @@ import {
   Text,
   Image,
   Link,
-
+  Icon
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { IconButton } from '@chakra-ui/react';
 import { Spin as Hamburger } from 'hamburger-react';
 import { AuthContext } from "../context/AuthContext";
 import UserProfileMenu from "./UserProfileMenu";
+import {colors} from '../theme/colors';
+import {FaBell} from 'react-icons/fa';
 function Navbar() {
   const [isOpen, setOpen] = useState(false);
   const { user, logout} = useContext(AuthContext);
@@ -21,67 +23,71 @@ function Navbar() {
   return (
     <Box
       as="nav"
-      bg="white"
+      bg="#111827"
       shadow="sm"
-      borderBottom="1px"
-      borderColor="gray.200"
+      borderBottom="1px solid"
+      borderColor={colors.border}
+      boxShadow="0 6px 24px rgba(0,0,0,.18)"
       position="sticky"
       top="0"
       zIndex="1000"
     >
       <Flex
-        maxW="1200px"
+        maxW="100%"
+        px={8}
         mx="auto"
         h="72px"
-        px={{ base: 6, md: 8 }}
         align="center"
         justify="space-between"
       >
         {/* Logo */}
-        <HStack gap={3}
-          display={{ base: "none", md: "flex" }}
-        >
-          <Image
-            src="./Logo.png"
-            alt="Logo"
-            boxSize="45px"
-            borderRadius="full"
-          />
-          <Text
-            fontSize="xl"
-            fontWeight="bold"
-            color="#0F766E"
-          >
-            LearnHub
-          </Text>
-        </HStack>
+       <HStack gap={3}>
+    <Image
+        src="./Logo.png"
+        boxSize="42px"
+        rounded="full"
+    />
 
+    <Text
+        fontWeight="800"
+        fontSize="2xl"
+        color={colors.primary}
+        letterSpacing="tight"
+    >
+        LearnHub
+    </Text>
+</HStack>
         {/* Navigation in Desktop */}
         <HStack
           gap={8}
           display={{ base: "none", md: "flex" }}
         >
 
-          <Link
+          {/* <Link
             as={RouterLink}
             to="/challengesCategory"
-            color="gray.700"
+            color="white"
             _hover={{
               color: "#0F766E",
               textDecoration: "none",
             }}
           >
             Challenges
-          </Link>
+          </Link> */}
 
           <Link
             as={RouterLink}
             to="/about"
-            color="gray.700"
-            _hover={{
-              color: "#0F766E",
-              textDecoration: "none",
-            }}
+            color="white"
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          _hover={{
+            bg: "gray.800",
+          }}
           >
             About
           </Link>
@@ -91,13 +97,19 @@ function Navbar() {
               <Link
             as={RouterLink}
             to="/notifications"
-            color="gray.700"
-            _hover={{
-              color: "#0F766E",
-              textDecoration: "none",
-            }}
+            color="white"
+
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          _hover={{
+            bg: "gray.800",
+          }}
           >
-            Notifications
+          <Icon as={FaBell} />
           </Link>
 
               <UserProfileMenu user={user} logout={logout} />
@@ -110,11 +122,18 @@ function Navbar() {
           <Button
             as={RouterLink}
             to="/login"
-            variant="ghost"
-            color="#0F766E"
-            _hover={{
-              bg: "teal.50",
-            }}
+            color="white"
+            bg={colors.primary}
+          _hover={{
+            bg: colors.primaryHover  
+          }}
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          
           >
             Login
           </Button>
@@ -122,11 +141,18 @@ function Navbar() {
           <Button
             as={RouterLink}
             to="/register"
-            bg="#0F766E"
             color="white"
-            _hover={{
-              bg: "#115E59",
-            }}
+          bg={colors.primary}
+          _hover={{
+            bg: colors.primaryHover  
+          }}
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          
           >
             Register
           </Button>
@@ -164,7 +190,7 @@ function Navbar() {
 {isOpen && (
   <Box
     display={{ base: "block", md: "none" }}
-    bg="white"
+    bg="gray.950"
     borderTop="1px"
     borderColor="gray.200"
     shadow="md"
@@ -173,21 +199,21 @@ function Navbar() {
   >
     <Flex direction="column" gap={5} align="center">
    {/* Logo */}
-      <Link
-        as={RouterLink}
-        to="/challengesCategory"
-        color="gray.700"
-        fontWeight="medium"
-        onClick={() => setOpen(false)}
-      >
-        Challenges
-      </Link>
+      
 
       <Link
         as={RouterLink}
         to="/about"
-        color="gray.700"
-        fontWeight="medium"
+       color="white"
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          _hover={{
+            bg: "gray.800",
+          }}
         onClick={() => setOpen(false)}
       >
         About
@@ -198,13 +224,18 @@ function Navbar() {
               <Link
             as={RouterLink}
             to="/notifications"
-            color="gray.700"
-            _hover={{
-              color: "#0F766E",
-              textDecoration: "none",
-            }}
+            color="white"
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+          _hover={{
+            bg: "gray.800",
+          }}
           >
-            Notifications
+          <Icon as={FaBell} />
           </Link>
 
               <UserProfileMenu user={user} logout={logout} />
@@ -215,9 +246,19 @@ function Navbar() {
       <Button
         as={RouterLink}
         to="/login"
-        variant="ghost"
-        color="#0F766E"
-        w="100%"
+        color="white"
+        bg={colors.primary}
+          _hover={{
+            bg: colors.primaryHover  
+          }}
+
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
+         
         onClick={() => setOpen(false)}
       >
         Login
@@ -226,10 +267,18 @@ function Navbar() {
       <Button
         as={RouterLink}
         to="/register"
-        bg="#0F766E"
         color="white"
-        w="100%"
-        _hover={{ bg: "#115E59" }}
+        bg={colors.primary}
+          _hover={{
+            bg: colors.primaryHover  
+          }}
+
+          align="center"
+          gap={3}
+          px={4}
+          py={3}
+          borderRadius="full"
+          cursor="pointer"
         onClick={() => setOpen(false)}
       >
         Register

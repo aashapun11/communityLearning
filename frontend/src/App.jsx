@@ -1,16 +1,22 @@
-import { useState } from 'react'
 import { Outlet } from "react-router-dom";
-import { Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import Navbar from './components/Navbar';
 import {colors} from './theme/colors';
+import LeftSidebar from "./components/LeftSidebar";
+import RightSidebar from "./components/RightSidebar";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-     <Box minH="100vh" bg={colors.background}>
+     <Box  bg={colors.background}>
       <Navbar />
-      <Outlet />
+      <Flex>
+        <LeftSidebar />
+        <Box flex="1">
+          <Outlet />
+        </Box>
+        <RightSidebar />
+      </Flex>
     </Box>
   )
 }
