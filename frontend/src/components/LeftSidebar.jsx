@@ -21,8 +21,11 @@ import {
 
 import { MdOutlineSchool } from "react-icons/md";
 import {colors} from '../theme/colors';
+import { useNavigate, NavLink } from "react-router-dom";
 
 function LeftSidebar() {
+  const navigate = useNavigate();
+
   const joinedChallenges = [
     "JavaScript Mastery",
     "React Mastery",
@@ -46,6 +49,8 @@ function LeftSidebar() {
       <VStack align="stretch" gap={2}>
 
         {/* HOME */}
+        <NavLink to="/">
+  {({ isActive }) => (
 
         <Flex
           align="center"
@@ -53,12 +58,12 @@ function LeftSidebar() {
           px={4}
           py={3}
           borderRadius="lg"
-         bg={colors.primary}
-                   _hover={{
-                     bg: colors.primaryHover  
-                   }}
-          color="white"
           cursor="pointer"
+           bg={isActive ? colors.primary : "transparent"}
+          color={isActive ? "white" : "white"}
+        _hover={{
+          bg: isActive ? colors.primaryHover : "gray.800",
+        }}
           transition=".2s"
          
         >
@@ -67,8 +72,12 @@ function LeftSidebar() {
             Home
           </Text>
         </Flex>
+         )}
+</NavLink>
 
         {/* EXPLORE */}
+        <NavLink to="/challengesCategory">
+  {({ isActive }) => (
 
         <Flex
           align="center"
@@ -77,17 +86,23 @@ function LeftSidebar() {
           py={3}
           borderRadius="lg"
           cursor="pointer"
-          _hover={{
-            bg: "gray.800",
-          }}
+      bg={isActive ? colors.primary : "transparent"}
+      color={isActive ? "white" : "white"}
+      _hover={{
+        bg: isActive ? colors.primaryHover : "gray.800",
+      }}
         >
           <Icon as={FaFire} color="orange.400" />
           <Text>
             Explore Challenges
           </Text>
         </Flex>
+          )}
+</NavLink>
 
         {/* MY CHALLENGES */}
+        <NavLink to="/myChallenges">
+  {({ isActive }) => (
 
         <Flex
           align="center"
@@ -95,6 +110,12 @@ function LeftSidebar() {
           px={4}
           py={3}
           borderRadius="lg"
+          cursor="pointer"
+      bg={isActive ? colors.primary : "transparent"}
+      color={isActive ? "white" : "white"}
+      _hover={{
+        bg: isActive ? colors.primaryHover : "gray.800",
+      }}
         >
           <Icon
             as={MdOutlineSchool}
@@ -107,6 +128,8 @@ function LeftSidebar() {
             My Challenges
           </Text>
         </Flex>
+        )} 
+</NavLink>
 
         <Separator my={2} />
 
@@ -124,7 +147,7 @@ function LeftSidebar() {
               cursor="pointer"
               transition=".2s"
               _hover={{
-                bg: "gray.800",
+                bg: colors.primaryHover  
               }}
             >
               <Box
@@ -147,6 +170,8 @@ function LeftSidebar() {
         <Separator my={4} />
 
         {/* LEADERBOARD */}
+        <NavLink to="/leaderboard">
+  {({ isActive }) => (
 
         <Flex
           align="center"
@@ -163,7 +188,8 @@ function LeftSidebar() {
             Leaderboards
           </Text>
         </Flex>
-
+ )}
+</NavLink>
         <VStack
           align="stretch"
           pl={6}
@@ -175,7 +201,7 @@ function LeftSidebar() {
             borderRadius="md"
             cursor="pointer"
             _hover={{
-              bg: "gray.800",
+              bg: colors.primaryHover
             }}
           >
             📅 Monthly
@@ -187,7 +213,7 @@ function LeftSidebar() {
             borderRadius="md"
             cursor="pointer"
             _hover={{
-              bg: "gray.800",
+              bg: colors.primaryHover
             }}
           >
             ⭐ All Time
@@ -208,6 +234,8 @@ function LeftSidebar() {
         <Separator my={4} />
 
         {/* SETTINGS */}
+        <NavLink to="/settings">
+  {({ isActive }) => (
 
         <Flex
           align="center"
@@ -217,7 +245,7 @@ function LeftSidebar() {
           borderRadius="lg"
           cursor="pointer"
           _hover={{
-            bg: "gray.800",
+            bg: colors.primaryHover
           }}
         >
           <Icon as={FiSettings} />
@@ -226,6 +254,8 @@ function LeftSidebar() {
             Settings
           </Text>
         </Flex>
+          )}
+</NavLink>
 
       </VStack>
     </Box>

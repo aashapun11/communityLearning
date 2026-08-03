@@ -33,14 +33,14 @@ function ChallengesCategory() {
   }, []);
 
   return (
-    <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={6}>
+    <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
       {Object.entries(challengesCategory).map(([category, topics]) => (
         <Box
         m={4}
         key={category}
   p={4}
   rounded="2xl"
-  bg="linear-gradient(135deg, white, teal.50)"
+  bg={colors.card}
   borderLeft="5px solid"
   borderLeftColor={colors.primary}
   shadow="sm"
@@ -63,7 +63,7 @@ function ChallengesCategory() {
         .join(" ")}
           </Text>
           <Wrap mt={4}>
-  {topics.slice(0, 2).map(topic => (
+  {topics.slice(0, 1).map(topic => (
     <Badge
       key={topic}
       rounded="full"
@@ -77,9 +77,9 @@ function ChallengesCategory() {
     </Badge>
   ))}
 
-  {topics.length > 2 && (
+  {topics.length > 1 && (
     <Badge rounded="full">
-      +{topics.length - 2}
+      +{topics.length - 1}
     </Badge>
   )}
 </Wrap>
