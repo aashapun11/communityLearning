@@ -300,6 +300,27 @@ const getChallengeById = async (req, res, next) => {
         next(err);
     }
 };
+ const getMyChallenges = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const challenges = await Challenge.find({
+      participants: userId,
+    })
+      .select(
+        "_id title topic difficulty duration startDate endDate"
+      )
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "My challenges fetched successfully",
+      count: challenges.length,
+      challenges,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 const joinChallenge = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -414,4 +435,4 @@ const getTopicsByCategory  = (req, res) => {
   });
 };
 
-module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory };
+module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, getMyChallenges, joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory };

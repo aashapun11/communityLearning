@@ -6,6 +6,7 @@ import App from './App.jsx'
 import { Toaster} from './components/ui/toaster'
 import { Provider } from './components/ui/provider'
 import { AuthProvider } from './context/AuthContext';
+import { ChallengeProvider } from './context/ChallengeContext';
 // import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import Register from './components/Register';
@@ -21,6 +22,8 @@ import ChallengesCategory from './pages/ChallengesCategory'
 import CategoryDetails from './components/CategoryDetails';
 import TopicChallenges from './pages/TopicChallenges'
 import Landing from './components/Landing';
+import MyChallenges from './pages/MyChallenges';
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,6 +39,7 @@ const router = createBrowserRouter(
     <Route path="/challenges/:challengeId" element={<ChallengeDetails />} /> 
     <Route path="/categories/:slug" element={<CategoryDetails />} />
     <Route path="/getChallengesByTopic/:topic" element={<TopicChallenges />} />
+    <Route path="/getMyChallenges" element={<MyChallenges />} />
 
 
     <Route path="/checkIns/:challengeId" element={<CheckIn />} />
@@ -48,8 +52,10 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider>
       <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
+         <ChallengeProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+          </ChallengeProvider>
       </AuthProvider>
     </Provider>
   </StrictMode>,

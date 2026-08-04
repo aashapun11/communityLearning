@@ -6,6 +6,7 @@ import {
   Flex,
   HStack,
   Separator,
+  Button
 } from "@chakra-ui/react";
 
 import {
@@ -17,21 +18,19 @@ import {
 import {
   FaFire,
   FaTrophy,
+  FaChevronDown,
+  FaChevronRight
 } from "react-icons/fa";
 
+import { useEffect, useState } from "react";
 import { MdOutlineSchool } from "react-icons/md";
 import {colors} from '../theme/colors';
 import { useNavigate, NavLink } from "react-router-dom";
-
+import { useChallenge } from "../context/ChallengeContext";
 function LeftSidebar() {
   const navigate = useNavigate();
-
-  const joinedChallenges = [
-    "JavaScript Mastery",
-    "React Mastery",
-    "DSA Bootcamp",
-    "Machine Learning",
-  ];
+  const { myChallenges, loading } = useChallenge();
+  
 
   return (
     <Box
@@ -100,73 +99,103 @@ function LeftSidebar() {
           )}
 </NavLink>
 
-        {/* MY CHALLENGES */}
-        <NavLink to="/myChallenges">
+    <NavLink to="/getMyChallenges">
   {({ isActive }) => (
-
-        <Flex
-          align="center"
-          gap={3}
-          px={4}
-          py={3}
-          borderRadius="lg"
-          cursor="pointer"
+    <Flex
+      align="center"
+      justify="space-between"
+      px={4}
+      py={3}
+      borderRadius="lg"
+      cursor="pointer"
       bg={isActive ? colors.primary : "transparent"}
-      color={isActive ? "white" : "white"}
       _hover={{
         bg: isActive ? colors.primaryHover : "gray.800",
       }}
-        >
-          <Icon
-            as={MdOutlineSchool}
-            color={colors.primary}
-          />
+    >
+      <HStack gap={3}>
+        <Icon
+          as={MdOutlineSchool}
+          color={isActive ? "white" : colors.primary}
+        />
 
-          <Text
-            fontWeight="600"
-          >
-            My Challenges
-          </Text>
-        </Flex>
-        )} 
+        <Text
+          color="white"
+          fontWeight="600"
+        >
+          My Challenges({myChallenges.length})
+        </Text>
+      </HStack>
+
+      <Icon
+        as={myChallenges.length ? FaChevronDown : FaChevronRight}
+        color="gray.400"
+        fontSize="12px"
+      />
+    </Flex>
+  )}
 </NavLink>
 
-        <Separator my={2} />
+<Separator my={2} />
 
-        <VStack
-          align="stretch"
-          pl={6}
-          gap={1}
+{loading ? (
+  <Text pl={6} color="gray.400">
+    Loading...
+  </Text>
+) : myChallenges.length > 0 ? (
+  <VStack align="stretch" pl={6} gap={1}>
+    {myChallenges.map((challenge) => (
+      <HStack
+        key={challenge._id}
+        px={3}
+        py={2}
+        borderRadius="md"
+        cursor="pointer"
+        _hover={{
+          bg: colors.primaryHover,
+        }}
+      >
+        <Box
+          w="7px"
+          h="7px"
+          borderRadius="full"
+          bg={colors.primary}
+        />
+
+        <Text
+          fontSize="sm"
+          color="gray.300"
         >
-          {joinedChallenges.map((challenge, index) => (
-            <HStack
-              key={index}
-              px={3}
-              py={2}
-              borderRadius="md"
-              cursor="pointer"
-              transition=".2s"
-              _hover={{
-                bg: colors.primaryHover  
-              }}
-            >
-              <Box
-                w="8px"
-                h="8px"
-                borderRadius="full"
-                bg={colors.primary}
-              />
+          {challenge.title}
+        </Text>
+      </HStack>
+    ))}
+  </VStack>
+): (
+  <Box
+    pl={6}
+    py={2}
+  >
+    <Text
+      fontSize="sm"
+      color="gray.500"
+      mb={3}
+    >
+      You haven't joined any challenges yet.
+    </Text>
 
-              <Text
-                fontSize="sm"
-                color="gray.300"
-              >
-                {challenge}
-              </Text>
-            </HStack>
-          ))}
-        </VStack>
-
+    <Button
+      size="sm"
+      bg={colors.primary}
+      color="white"
+      _hover={{
+        bg: colors.primaryHover,
+      }}
+    >
+      Explore Challenges
+    </Button>
+  </Box>
+)}
         <Separator my={4} />
 
         {/* LEADERBOARD */}
