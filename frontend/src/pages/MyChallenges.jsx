@@ -8,9 +8,9 @@ import {
 import { useChallenge } from "../context/ChallengeContext";
 import { colors } from "../theme/colors";
 
-// import MyChallengesHeader from "../components/myChallenges/MyChallengesHeader";
+import MyChallengesHeader from "../components/myChallenges/MyChallengesHeader";
 // import SearchChallenges from "../components/myChallenges/SearchChallenges";
-// import ChallengeGrid from "../components/myChallenges/ChallengeGrid";
+import ChallengeGrid from "../components/myChallenges/ChallengeGrid";
 // import EmptyChallenges from "../components/myChallenges/EmptyChallenges";
 
 function MyChallenges() {
@@ -30,9 +30,11 @@ function MyChallenges() {
           gap={8}
         >
           {/* Header */}
-          {/* <MyChallengesHeader
-            totalChallenges={myChallenges.length}
-          /> */}
+          <MyChallengesHeader
+            joinedCount={myChallenges.length}
+            activeCount={myChallenges.filter(challenge => challenge.status === "active").length}
+            completedCount={myChallenges.filter(challenge => challenge.status === "completed").length}
+          />
 
           {/* Search */}
           {/* <SearchChallenges /> */}
@@ -47,6 +49,7 @@ function MyChallenges() {
               You have not joined any challenges yet.
             </Box>
           ) : (
+            
             <ChallengeGrid
               challenges={myChallenges}
             />
