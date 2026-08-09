@@ -300,6 +300,9 @@ const getChallengeById = async (req, res, next) => {
         next(err);
     }
 };
+
+
+
  const getMyChallenges = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -308,14 +311,50 @@ const getChallengeById = async (req, res, next) => {
       participants: userId,
     })
       .select(
-        "_id title topic difficulty duration startDate endDate"
+        "_id title topic difficulty duration startDate endDate participants isActive"
       )
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const challengesWithProgress = await Promise.all(
+      challenges.map(async (challenge) => {
+        // Get user's latest check-in for this challenge
+        const lastCheckIn = await CheckIn.findOne({
+          userId,
+          challengeId: challenge._id,
+        })
+          .sort({ date: -1 })
+          .select("date")
+          .lean();
+
+        // Count total check-ins for this challenge
+        const completedDays = await CheckIn.countDocuments({
+          userId,
+          challengeId: challenge._id,
+        });
+
+        return {
+          ...challenge,
+
+          // Challenge-level information
+          membersCount: challenge.participants.length,
+
+          // User-specific information
+          completedDays,
+          currentStreak: req.user.currentStreak,
+          coins: req.user.coins,
+
+          lastCheckIn: lastCheckIn
+            ? lastCheckIn.date
+            : null,
+        };
+      })
+    );
 
     res.status(200).json({
       message: "My challenges fetched successfully",
-      count: challenges.length,
-      challenges,
+      count: challengesWithProgress.length,
+      challenges: challengesWithProgress,
     });
   } catch (error) {
     next(error);

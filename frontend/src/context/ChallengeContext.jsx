@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { getMyChallenges, 
 joinChallenge as joinChallengeApi,
   leaveChallenge as leaveChallengeApi,
+  getChallengeById
 
  } from "../api/challengeApi";
 
@@ -33,63 +34,91 @@ export function ChallengeProvider({ children }) {
 };
 
 
-const joinChallenge = async (challengeId) => {
-  try {
-    setLoading(true);
-    setError(null);
+// const joinChallenge = async (challengeId) => {
+//   try {
+//     setLoading(true);
+//     setError(null);
 
-    await joinChallengeApi(challengeId);
+//     await joinChallengeApi(challengeId);
 
-    // Refresh joined challenges
-    await getJoinedChallenges();
+//     // Refresh joined challenges
+//     await getJoinedChallenges();
 
-    return { success: true };
-  } catch (err) {
-    const message =
-      err.response?.data?.message || "Failed to join challenge";
+//     return { success: true };
+//   } catch (err) {
+//     const message =
+//       err.response?.data?.message || "Failed to join challenge";
 
-    setError(message);
+//     setError(message);
 
-    return {
-      success: false,
-      message,
-    };
-  } finally {
-    setLoading(false);
-  }
-};
+//     return {
+//       success: false,
+//       message,
+//     };
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
-const leaveChallenge = async (challengeId) => {
-  try {
-    setLoading(true);
-    setError(null);
+// const leaveChallenge = async (challengeId) => {
+//   try {
+//     setLoading(true);
+//     setError(null);
 
-    await leaveChallengeApi(challengeId);
+//     await leaveChallengeApi(challengeId);
 
-    // Refresh joined challenges
-    await getJoinedChallenges();
+//     // Refresh joined challenges
+//     await getJoinedChallenges();
 
-    return { success: true };
-  } catch (err) {
-    const message =
-      err.response?.data?.message || "Failed to leave challenge";
+//     return { success: true };
+//   } catch (err) {
+//     const message =
+//       err.response?.data?.message || "Failed to leave challenge";
 
-    setError(message);
+//     setError(message);
 
-    return {
-      success: false,
-      message,
-    };
-  } finally {
-    setLoading(false);
-  }
-};
+//     return {
+//       success: false,
+//       message,
+//     };
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+// const getSingleChallenge = async (challengeId) => {
+//   try {
+//     setLoading(true);
+//     setError(null);
+//     let id = challengeId;
+//     console.log("Fetching challenge details for ID:", id); // Debugging line
+//     console.log("getChallengeById function:", challengeId); // Debugging line
+
+//     const response = await getChallengeById(challengeId);
+//     setSingleChallenge(response.data.challenge);
+//     console.log("getChallengeById response:", response.data.challenge); // Debugging line
+
+//     return { success: true, challenge: response.data.challenge };
+//   } catch (err) {
+//     const message =
+//       err.response?.data?.message || "Failed to fetch challenge details";
+
+//     setError(message);
+
+//     return {
+//       success: false,
+//       message,
+//     };
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 useEffect(() => {
   getJoinedChallenges();
 }, []);
   return (
-    <ChallengeContext.Provider value={{ myChallenges, loading, error, joinChallenge, leaveChallenge }}>
+    <ChallengeContext.Provider value={{ myChallenges, loading, error }}>
       {children}
     </ChallengeContext.Provider>
   );

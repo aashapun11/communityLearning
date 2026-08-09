@@ -17,15 +17,15 @@ import { colors } from "../../../theme/colors";
 function ChallengeCardFooter({ challenge }) {
   return (
     <Box
-      px={5}
-      py={4}
+      px={3}
+      py={2}
       borderTop="1px solid"
       borderColor={colors.border}
     >
       <Flex
         justify="space-between"
         align="center"
-        gap={3}
+        gap={1}
         wrap="wrap"
       >
         {/* Continue */}
@@ -40,31 +40,6 @@ function ChallengeCardFooter({ challenge }) {
           Continue
         </Button>
 
-        {/* Secondary Actions */}
-        <HStack gap={2}>
-          <Button
-            variant="ghost"
-            leftIcon={<FaInfoCircle />}
-            color={colors.secondaryText}
-            _hover={{
-              bg: `${colors.primary}10`,
-              color: colors.primary,
-            }}
-          >
-            Details
-          </Button>
-
-          <Button
-            variant="ghost"
-            leftIcon={<FaSignOutAlt />}
-            color={colors.danger}
-            _hover={{
-              bg: "red.50",
-            }}
-          >
-            Leave
-          </Button>
-        </HStack>
       </Flex>
     </Box>
   );

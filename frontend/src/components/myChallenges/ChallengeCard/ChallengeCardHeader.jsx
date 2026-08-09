@@ -12,12 +12,20 @@ import {
 
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { colors } from "../../../theme/colors";
+import {useState, useEffect } from "react";
+import axiosInstance from "../../../api/axiosInstance";
+// import { useChallenge } from "../../../context/ChallengeContext";
 
 function ChallengeCardHeader({ challenge }) {
+
   const difficultyColor = {
     Beginner: "green",
     Intermediate: "orange",
     Advanced: "red",
+  };
+  const activeColor = {
+    true: "green",
+    false: "red",
   };
 
   return (
@@ -72,7 +80,7 @@ function ChallengeCardHeader({ challenge }) {
             py={1}
             fontWeight="600"
           >
-            🎯 {challenge.difficulty}
+          {challenge.difficulty}
           </Badge>
 
           {/* Duration */}
@@ -91,16 +99,16 @@ function ChallengeCardHeader({ challenge }) {
 
           {/* Status */}
   <Badge
-    bg="green.50"
-    color="green.700"
+    bg={activeColor[challenge.isActive] || "gray.50"}
+    color="white"
     border="1px solid"
-    borderColor="green.200"
+    borderColor={activeColor[challenge.isActive] === "green" ? "green.400" : "red.400"}
     borderRadius="full"
     px={3}
     py={1}
     fontWeight="600"
   >
-    🚀 {challenge.status}
+ {challenge.isActive ? "Active" : "Inactive"}
   </Badge>
 
   {/* Members */}
@@ -128,7 +136,15 @@ function ChallengeCardHeader({ challenge }) {
     py={1}
     fontWeight="600"
   >
-    ✅ Last Check-in: {challenge.lastCheckIn}
+    {challenge.lastCheckIn
+  ? `${new Date(challenge.lastCheckIn).getFullYear()} ${new Date(
+      challenge.lastCheckIn
+    ).toLocaleString("en-US", {
+      month: "short",
+    })} ${String(
+      new Date(challenge.lastCheckIn).getDate()
+    ).padStart(2, "0")}`
+  : "N/A"}
   </Badge>
         </HStack>
       </Box>

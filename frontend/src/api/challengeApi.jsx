@@ -10,6 +10,9 @@ export const joinChallenge = (challengeId) =>
 export const leaveChallenge = (challengeId) =>
   axiosInstance.delete(`/challenges/${challengeId}/leave`);
 
+export const getChallengeById = (challengeId) =>
+  axiosInstance.get(`/challenges/getChallengeById/${challengeId}`);
+
 // challengeApi.js should contain all challenge-related API calls, for example:
 
 // export const getMyChallenges = ...

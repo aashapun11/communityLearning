@@ -15,10 +15,10 @@ import {
 } from "react-icons/fa";
 
 import { colors } from "../../../theme/colors";
-
 function ChallengeCardBody({ challenge }) {
   const progress =
     (challenge.completedDays / challenge.duration) * 100;
+
 
   return (
     <Box px={5} py={5}>
@@ -47,7 +47,7 @@ function ChallengeCardBody({ challenge }) {
           </HStack>
 
           <Stat.ValueText color={colors.text}>
-            {challenge.currentStreak} Days
+            {challenge.currentStreak > 1 ? `${challenge.currentStreak} Days` : `${challenge.currentStreak} Day`}
           </Stat.ValueText>
         </Stat.Root>
 

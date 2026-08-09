@@ -60,7 +60,7 @@ topic: {
         type: Boolean,
         default: true
     },
-    isActive: {
+    isActive: { //currently active or not, if false, it means the challenge has ended
         type: Boolean,
         default: true
     }
