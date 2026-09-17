@@ -13,8 +13,10 @@ import {
 } from "react-icons/fa";
 
 import { colors } from "../../../theme/colors";
+import { useNavigate } from "react-router-dom";
 
 function ChallengeCardFooter({ challenge }) {
+  const navigate = useNavigate();
   return (
     <Box
       px={3}
@@ -30,12 +32,19 @@ function ChallengeCardFooter({ challenge }) {
       >
         {/* Continue */}
         <Button
+          size="sm"
+          variant="solid"
           bg={colors.primary}
           color="white"
           leftIcon={<FaArrowRight />}
           _hover={{
             bg: colors.primaryHover,
-          }}
+          }} 
+         onClick={() => {
+  if (challenge.status === "inactive") return;
+
+  navigate(`/checkIns/${challenge._id}`);
+}}
         >
           Continue
         </Button>

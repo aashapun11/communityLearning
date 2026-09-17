@@ -12,11 +12,13 @@ import {
 
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { colors } from "../../../theme/colors";
+import { useNavigate } from "react-router-dom";
 import {useState, useEffect } from "react";
 import axiosInstance from "../../../api/axiosInstance";
 // import { useChallenge } from "../../../context/ChallengeContext";
 
 function ChallengeCardHeader({ challenge }) {
+  const navigate = useNavigate();
 
   const difficultyColor = {
     Beginner: "green",
@@ -169,7 +171,10 @@ function ChallengeCardHeader({ challenge }) {
         <Portal>
           <Menu.Positioner>
             <Menu.Content>
-              <Menu.Item value="details">
+              <Menu.Item value="details"
+              cursor={"pointer"}
+                onClick={() => navigate(`/challengeDetails/${challenge._id}`)}
+>
                 View Details
               </Menu.Item>
 

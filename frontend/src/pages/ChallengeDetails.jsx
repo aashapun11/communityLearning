@@ -1,367 +1,633 @@
+
+
+import React from "react";
 import {
-  Badge,
   Box,
   Button,
-  Container,
   Flex,
-  Heading,
+  Grid,
+  GridItem,
   HStack,
+  Progress,
+  Separator,
   SimpleGrid,
-  Stack,
   Text,
+  VStack,
 } from "@chakra-ui/react";
-import {colors} from "../theme/colors";
-import { useParams } from "react-router";
-import { useEffect, useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import {useNavigate, Link as RouterLink } from "react-router-dom";
-import { toaster } from "../components/ui/toaster";
-import { LuPencil, LuTrash2 } from "react-icons/lu";
+
+import {
+  FaArrowLeft,
+  FaFire,
+  FaCoins,
+  FaCheckCircle,
+  FaCalendarAlt,
+  FaUsers,
+  FaTrophy,
+  FaMedal,
+  FaClock,
+  FaBookOpen,
+} from "react-icons/fa";
+
+import { useNavigate } from "react-router-dom";
+import { colors } from "../theme/colors";
+
+const challenge = {
+  title: "30 Days of C++",
+  topic: "C++",
+  difficulty: "beginner",
+  duration: 30,
+
+  description:
+    "Build a strong foundation in C++ through daily practice, problem solving, and hands-on coding challenges.",
+
+  status: "Active",
+  membersCount: 1250,
+
+  startDate: "2026 Aug 01",
+  endDate: "2026 Aug 30",
+
+  completedDays: 2,
+  currentStreak: 1,
+  longestStreak: 2,
+  coins: 82,
+  lastCheckIn: "2026 Aug 09",
+
+  creator: "Alex Johnson",
+
+  leaderboard: [
+    { rank: 1, name: "Sarah Lee", days: 28 },
+    { rank: 2, name: "John Smith", days: 26 },
+    { rank: 3, name: "David Kim", days: 24 },
+    { rank: 24, name: "You", days: 20 },
+  ],
+
+  checkIns: [
+    { day: 1, date: "2026 Aug 08", status: "Completed" },
+    { day: 2, date: "2026 Aug 09", status: "Completed" },
+    { day: 3, date: "-", status: "Pending" },
+  ],
+};
 
 function ChallengeDetails() {
-  const [challenge, setChallenge] = useState({});
-  const [stats, setStats] = useState({});
-  const [userProgress, setUserProgress] = useState(null);
-  const { challengeId } = useParams();
-  const [isCreator, setIsCreator] = useState(false);
-const user = JSON.parse(localStorage.getItem("user"));
-const currentUserId = user?.id;
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const fetchChallengeDetails = async () => {
-  try {
-    const response = await axiosInstance.get(`/challenges/getChallengeById/${challengeId}`);
-    setChallenge(response.data.challenge);
-    setIsCreator(response.data.challenge.createdBy._id === currentUserId);
-    setStats(response.data.stats);
-    setUserProgress(response.data.userProgress);
-  } catch (error) {
-    toaster.create({
-      title: "Error",
-      description: error.response.data.message || "Failed to fetch challenge details.",
-      type: "error"
-    })
-  }
-};
-
- useEffect(() => {
-    fetchChallengeDetails();
-  }, [challengeId]);
-
-  const handleJoin = async () => {
-  try {
-   await axiosInstance.post(`/challenges/joinChallenge/${challengeId}`);   
-   fetchChallengeDetails();
-   toaster.create({
-    title: "Challenge joined.",
-    description: "You have successfully joined the challenge.",
-    type: "success"
-   })
-  } catch (error) {
-    toaster.create({
-      title: "Error",
-      description: error.response.data.message || "Failed to join challenge.",
-      type: "error"
-    })
-  }
-
-};
-
-const handleLeave = async () => {
-  try {
-   await axiosInstance.delete(`/challenges/leaveChallenge/${challengeId}`);   
-   fetchChallengeDetails();
-   toaster.create({
-    title: "Challenge left.",
-    description: "You have successfully left the challenge.",
-    type: "success"
-   })
-  } catch (error) {
-    toaster.create({
-      title: "Error",
-      description: error.response.data.message || "Failed to leave challenge.",
-      type: "error"
-    })
-  }
-};
-const handleDelete = async () => {
-    console.log("Delete clicked");
-
-   const confirmed = window.confirm(
-    "Are you sure you want to delete this challenge? This action cannot be undone."
-  );
-
-  if (!confirmed) return;
-  try {
-   await axiosInstance.delete(`/challenges/deleteChallenge/${challengeId}`);   
-   navigate("/challenges");
-   toaster.create({
-    title: "Challenge deleted.",
-    description: "You have successfully deleted the challenge.",
-    type: "success"
-   })
-  } catch (error) {
-     console.log(error);
-  console.log(error.response);
-    toaster.create({
-      title: "Error",
-      description: error.response.data.message || "Failed to delete challenge.",
-      type: "error"
-    })
-  }
-}
+  const progress =
+    (challenge.completedDays / challenge.duration) * 100;
 
   return (
-    <Box bg={colors.bg} color={colors.text} minH="100vh" py={10}>
-      <Container maxW="7xl">
-
-        {/* Header */}
-        <Stack gap={4} mb={4}>
-         <Flex
-  justify="space-between"
-  align={{ base: "start", md: "center" }}
-  direction={{ base: "column", md: "row" }}
-  gap={4}
-  mb={10}
->
-  <Heading
-    size="2xl"
-    color={colors.text}
-    fontWeight="extrabold"
-    lineHeight="1.2"
-  >
-    {challenge.title}
-  </Heading>
-
-  {isCreator && (
-    <HStack spacing={3}>
-     <Button
-  as={RouterLink}
-  to={`/updateChallenge/${challenge._id}`}
-  bg={colors.primary}
-  color="white"
-  size="lg"
-  borderRadius="xl"
-  _hover={{
-    bg: colors.primaryHover,
-    transform: "translateY(-2px)",
-  }}
->
-  <HStack gap={2}>
-    <LuPencil />
-    <Text>Edit</Text>
-  </HStack>
-</Button>
+    <Box
+      minH="100vh"
+      bg={colors.background}
+      color={colors.text}
+      px={{ base: 4, md: 8 }}
+      py={6}
+    >
+      {/* BACK BUTTON */}
 
       <Button
-        bg="red.500"
-        color="white"
-        size="lg"
-        borderRadius="xl"
-        onClick={handleDelete}
+        variant="ghost"
+        leftIcon={<FaArrowLeft />}
+        color={colors.secondaryText}
+        mb={5}
+        onClick={() => navigate(-1)}
         _hover={{
-          bg: "red.600",
-          transform: "translateY(-2px)",
+          bg: "white",
+          color: colors.primary,
         }}
       >
-        <HStack gap={2}>
-          <LuTrash2 />
-          <Text>Delete</Text>
-        </HStack>
+        Back
       </Button>
-    </HStack>
-  )}
-</Flex>
-          <Flex gap={3} wrap="wrap">
-            <Badge colorPalette="teal">
-              {challenge.topic|| "No Topic" }
-            </Badge>
 
-            <Badge colorPalette="orange">
-              {challenge.difficulty}
-            </Badge>
+      {/* HEADER */}
 
-            <Badge colorPalette="blue">
-              {challenge.duration}
-            </Badge>
-          </Flex>
+      <Box
+        bg={colors.card}
+        border="1px solid"
+        borderColor={colors.border}
+        borderLeft="5px solid"
+        borderLeftColor={colors.primary}
+        borderRadius="xl"
+        p={{ base: 5, md: 7 }}
+        shadow="sm"
+      >
+        <Flex
+          justify="space-between"
+          align={{ base: "flex-start", md: "center" }}
+          direction={{ base: "column", md: "row" }}
+          gap={5}
+        >
+          <Box>
+            <HStack mb={3} gap={1}>
+              <FaBookOpen color={colors.primary} />
 
-          <Text color="gray.600">
-            {challenge.description}
-          </Text>
-        </Stack>
+              <Text
+                fontSize="sm"
+                fontWeight="600"
+                color={colors.primary}
+              >
+                {challenge.topic}
+              </Text>
+            </HStack>
 
-        {/* Stats + Progress */}
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+            <Text
+              fontSize={{ base: "2xl", md: "3xl" }}
+              fontWeight="800"
+              color={colors.text}
+            >
+              {challenge.title}
+            </Text>
 
-          {/* Challenge Stats */}
+            <Text
+              mt={3}
+              maxW="700px"
+              color={colors.secondaryText}
+              lineHeight="1.7"
+            >
+              {challenge.description}
+            </Text>
+          </Box>
+
           <Box
-            bg="white"
+            px={4}
+            py={2}
+            fontSize="sm"
+            borderRadius="full"
+            bg="green.50"
+            color="green.700"
+            fontWeight="700"
+            border="1px solid"
+            borderColor="green.200"
+          >
+            {challenge.status}
+          </Box>
+        </Flex>
+
+        <Separator my={6} />
+
+        <Flex
+          gap={6}
+          flexWrap="wrap"
+          color={colors.secondaryText}
+        >
+          <HStack>
+            <FaClock />
+            <Text>
+              {challenge.duration} Days
+            </Text>
+          </HStack>
+
+          <HStack>
+            <FaUsers />
+            <Text>
+              {challenge.membersCount.toLocaleString()} Learners
+            </Text>
+          </HStack>
+
+          <HStack>
+            <FaCalendarAlt />
+            <Text>
+              {challenge.startDate} → {challenge.endDate}
+            </Text>
+          </HStack>
+
+          <Text>
+            Created by <strong>{challenge.creator}</strong>
+          </Text>
+        </Flex>
+      </Box>
+
+      {/* MAIN CONTENT */}
+
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          lg: "2fr 1fr",
+        }}
+        gap={6}
+        mt={6}
+      >
+        {/* LEFT COLUMN */}
+
+        <GridItem>
+          {/* MY PROGRESS */}
+
+          <Box
+            bg={colors.card}
+            border="1px solid"
+            borderColor={colors.border}
+            borderRadius="xl"
             p={6}
-            rounded="xl"
             shadow="sm"
           >
-         <Heading size="md" mb={5} color="gray.800">
-      📊 Challenge Status
-    </Heading>
+            <Text
+              fontSize="xl"
+              fontWeight="700"
+              mb={5}
+              color={colors.text}
+            >
+              📊 My Progress
+            </Text>
 
-    <Stack gap={4}>
+            <SimpleGrid
+              columns={{ base: 2, md: 4 }}
+              gap={4}
+            >
+              <StatCard
+                icon={<FaFire color="#EA580C" />}
+                label="Current Streak"
+                value={`${challenge.currentStreak} Days`}
+              />
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Participants</Text>
-        <Text fontWeight="bold" color="gray.900">
-          {stats.totalParticipants || 0}
-        </Text>
-      </Flex>
+              <StatCard
+                icon={<FaFire color="#DC2626" />}
+                label="Longest Streak"
+                value={`${challenge.longestStreak} Days`}
+              />
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Completed Days</Text>
-        <Text fontWeight="bold" color="green.600">
-          {stats.completedDays || 0} days
-        </Text>
-      </Flex>
+              <StatCard
+                icon={<FaCoins color="#EAB308" />}
+                label="Coins"
+                value={challenge.coins}
+              />
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Remaining Days</Text>
-        <Text fontWeight="bold" color="orange.600">
-          {stats.remainingDays || 0} days
-        </Text>
-      </Flex>
+              <StatCard
+                icon={<FaCheckCircle color="#16A34A" />}
+                label="Check-ins"
+                value={`${challenge.completedDays}/${challenge.duration}`}
+              />
+            </SimpleGrid>
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Starting Date</Text>
-        <Text fontWeight="bold" color="teal.600">
-          {new Date(challenge.startDate).toLocaleDateString("en-GB", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-}) || "Unknown"}
-        </Text>
-      </Flex>
+            <Box mt={7}>
+              <Flex
+                justify="space-between"
+                mb={2}
+              >
+                <Text fontWeight="700">
+                  Challenge Progress
+                </Text>
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Ending Date</Text>
-        <Text fontWeight="bold" color="teal.600">
-          {new Date(challenge.endDate).toLocaleDateString("en-GB", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-}) || "Unknown"}
-        </Text>
-      </Flex>
+                <Text
+                  fontWeight="700"
+                  color={colors.primary}
+                >
+                  {Math.round(progress)}%
+                </Text>
+              </Flex>
 
+              <Progress.Root
+                value={progress}
+                size="md"
+                borderRadius="full"
+              >
+                <Progress.Track>
+                  <Progress.Range bg={colors.primary} />
+                </Progress.Track>
+              </Progress.Root>
 
-      <Flex justify="space-between" align="center">
-        <Text color="gray.600">Status</Text>
-
-        <Badge
-          colorPalette={
-            stats.status === "completed"
-              ? "green"
-              : stats.status === "ongoing"
-              ? "blue"
-              : "gray"
-          }
-          px={3}
-          py={1}
-          rounded="full"
-          textTransform="capitalize"
-        >
-          {stats.status || "unknown"}
-        </Badge>
-      </Flex>
-
-    </Stack>
+              <Text
+                mt={2}
+                fontSize="sm"
+                color={colors.secondaryText}
+              >
+                {challenge.completedDays} of{" "}
+                {challenge.duration} days completed
+              </Text>
+            </Box>
           </Box>
 
-          {/* User Progress */}
+          {/* CHECK-IN HISTORY */}
+
           <Box
-    bg="white"
-    p={6}
-    rounded="2xl"
-    shadow="sm"
-    borderWidth="1px"
-    borderColor="gray.100"
-  >
-    <Heading size="md" mb={5} color="gray.800">
-      📈 Your Progress
-    </Heading>
+            mt={6}
+            bg={colors.card}
+            border="1px solid"
+            borderColor={colors.border}
+            borderRadius="xl"
+            p={6}
+            shadow="sm"
+          >
+            <Text
+              fontSize="xl"
+              fontWeight="700"
+              mb={5}
+            >
+              📅 Check-in History
+            </Text>
 
-    {userProgress?.isJoined ? (
-  <Stack gap={5}>
-    <Text color="gray.600">
-      You have completed
-      <Text as="span" fontWeight="bold" color="teal.600">
-        {" "}{userProgress.totalCheckIns || 0}
-      </Text>
-      {" "}out of
-      <Text as="span" fontWeight="bold">
-        {" "}{challenge.duration || 0}
-      </Text>
-      {" "}days.
-    </Text>
+            <VStack
+              align="stretch"
+              gap={0}
+            >
+              {challenge.checkIns.map((checkIn) => (
+                <Flex
+                  key={checkIn.day}
+                  justify="space-between"
+                  align="center"
+                  py={4}
+                  borderBottom="1px solid"
+                  borderColor={colors.border}
+                >
+                  <HStack gap={4}>
+                    <Box
+                      w="34px"
+                      h="34px"
+                      borderRadius="full"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      bg={
+                        checkIn.status === "Completed"
+                          ? "green.50"
+                          : "gray.100"
+                      }
+                    >
+                      {checkIn.status === "Completed"
+                        ? "✓"
+                        : "−"}
+                    </Box>
 
-  
+                    <Box>
+                      <Text
+                        fontWeight="600"
+                      >
+                        Day {checkIn.day}
+                      </Text>
 
-    <Text>
-      📊 Progress:
-      <Text as="span" fontWeight="bold">
-        {" "}{userProgress.progressPercent || 0}%
-      </Text>
-    </Text>
+                      <Text
+                        fontSize="sm"
+                        color={colors.secondaryText}
+                      >
+                        {checkIn.date}
+                      </Text>
+                    </Box>
+                  </HStack>
 
-    <Text>
-      🎯 Status:
-      <Text
-        as="span"
-        fontWeight="bold"
-        color={userProgress.isCompleted ? "green.500" : "orange.500"}
-      >
-        {" "}
-        {userProgress.isCompleted ? "Completed" : "In Progress"}
-      </Text>
-    </Text>
-   {(stats.isCompleted || stats.progressPercent === 100) ? (
-  <Box>
-    <Button mt={4} w="full" disabled bg={colors.primary}>
-      ✅ Challenge Completed
-    </Button>
-  </Box>
-) : (
-  <Box>
-    <Button as={RouterLink} to={`/checkIns/${challenge._id}`} mt={4} w="full" bg={colors.primary} _hover={{ bg: colors.primaryHover }}>
-      Continue Challenge
-    </Button>
-    <Button mt={2} variant="ghost" size="sm" colorPalette="red" onClick={handleLeave}>
-      Leave Challenge
-    </Button>
-  </Box>
-)}
-  </Stack>
-) : (
-  <Box>
-  <Text color="gray.500">
-    You haven't joined this challenge yet.
-  </Text>
-  <Button
-      mt={4}
-      onClick={handleJoin}
-      w="full"
-      bg={colors.primary}
-      _hover={{ bg: colors.primaryHover }}
-    
-    >
-      Join Challenge
-    </Button>
-    </Box>
-  
-)}
-            
+                  <Text
+                    fontSize="sm"
+                    fontWeight="600"
+                    color={
+                      checkIn.status === "Completed"
+                        ? "green.600"
+                        : colors.secondaryText
+                    }
+                  >
+                    {checkIn.status}
+                  </Text>
+                </Flex>
+              ))}
+            </VStack>
+          </Box>
+        </GridItem>
+
+        {/* RIGHT COLUMN */}
+
+        <GridItem>
+          {/* LEADERBOARD */}
+
+          <Box
+            bg={colors.card}
+            border="1px solid"
+            borderColor={colors.border}
+            borderRadius="xl"
+            p={4}
+            shadow="sm"
+          >
+            <Flex
+              justify="space-between"
+              align="center"
+              mb={5}
+            >
+              <HStack>
+                <FaTrophy color="#EAB308" />
+
+                <Text
+                  fontSize="lg"
+                  fontWeight="700"
+                >
+                  Challenge Leaderboard
+                </Text>
+              </HStack>
+            </Flex>
+
+            <VStack
+              align="stretch"
+              gap={2}
+            >
+              {challenge.leaderboard.map((user) => (
+                <Flex
+                  key={`${user.rank}-${user.name}`}
+                  justify="space-between"
+                  align="center"
+                  px={3}
+                  py={3}
+                  borderRadius="lg"
+                  bg={
+                    user.name === "You"
+                      ? `${colors.primary}12`
+                      : "transparent"
+                  }
+                >
+                  <HStack>
+                    <Text
+                      w="50px"
+                      minW="50px"
+                      fontWeight="700"
+                      color={colors.secondaryText}
+                    >
+                      #{user.rank}
+                    </Text>
+
+                    <Text
+                      fontWeight={
+                        user.name === "You"
+                          ? "700"
+                          : "500"
+                      }
+                    >
+                      {user.name}
+                    </Text>
+                  </HStack>
+
+                  <Text
+                    fontWeight="600"
+                    color={colors.primary}
+                  >
+                    {user.days} days
+                  </Text>
+                </Flex>
+              ))}
+            </VStack>
+
+            <Button
+              mt={5}
+              width="full"
+              variant="outline"
+              borderColor={colors.primary}
+              color={colors.primary}
+              _hover={{
+                bg: colors.primary,
+                color: "white",
+              }}
+            >
+              View Full Leaderboard
+            </Button>
           </Box>
 
-        </SimpleGrid>
-      </Container>
+          {/* REWARDS */}
+
+          <Box
+            mt={6}
+            bg={colors.card}
+            border="1px solid"
+            borderColor={colors.border}
+            borderRadius="xl"
+            p={6}
+            shadow="sm"
+          >
+            <HStack mb={5}>
+              <FaMedal color="#EAB308" />
+
+              <Text
+                fontSize="lg"
+                fontWeight="700"
+              >
+                Challenge Rewards
+              </Text>
+            </HStack>
+
+            <VStack
+              align="stretch"
+              gap={4}
+            >
+              <RewardRow
+                title="7-Day Streak"
+                reward="🔥 On Fire Badge"
+                unlocked={false}
+              />
+
+              <RewardRow
+                title="14-Day Streak"
+                reward="🏆 Consistent Learner"
+                unlocked={false}
+              />
+
+              <RewardRow
+                title="30-Day Completion"
+                reward="🎓 Challenge Master"
+                unlocked={false}
+              />
+            </VStack>
+          </Box>
+
+          {/* ACTION */}
+
+          <Button
+            mt={6}
+            width="full"
+            size="lg"
+            bg={colors.primary}
+            color="white"
+            _hover={{
+              bg: colors.primaryHover,
+            }}
+            onClick={() =>
+              navigate(
+                `/checkIns/${challenge._id}`
+              )
+            }
+          >
+            Today's Check-in →
+          </Button>
+        </GridItem>
+      </Grid>
     </Box>
+  );
+}
+
+/* -------------------------
+   STAT CARD
+------------------------- */
+
+function StatCard({
+  icon,
+  label,
+  value,
+}) {
+  return (
+    <Box
+      p={4}
+      border="1px solid"
+      borderColor={colors.border}
+      borderRadius="lg"
+    >
+      <HStack mb={2} gap={2}>
+        {icon}
+
+        <Text
+          fontSize="sm"
+          color={colors.secondaryText}
+        >
+          {label}
+        </Text>
+      </HStack>
+
+      <Text
+        fontSize="xl"
+        fontWeight="800"
+        color={colors.text}
+      >
+        {value}
+      </Text>
+    </Box>
+  );
+}
+
+/* -------------------------
+   REWARD ROW
+------------------------- */
+
+function RewardRow({
+  title,
+  reward,
+  unlocked,
+}) {
+  return (
+    <Flex
+      justify="space-between"
+      align="center"
+      p={3}
+      borderRadius="lg"
+      bg="gray.50"
+    >
+      <Box>
+        <Text
+          fontSize="sm"
+          fontWeight="600"
+        >
+          {title}
+        </Text>
+
+        <Text
+          fontSize="xs"
+          color={colors.secondaryText}
+          mt={1}
+        >
+          {reward}
+        </Text>
+      </Box>
+
+      <Text
+        fontSize="xs"
+        fontWeight="700"
+        color={
+          unlocked
+            ? "green.600"
+            : colors.secondaryText
+        }
+      >
+        {unlocked ? "Unlocked" : "Locked"}
+      </Text>
+    </Flex>
   );
 }
 

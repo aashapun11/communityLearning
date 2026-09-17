@@ -16,6 +16,7 @@ import { colors } from "../../theme/colors";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance"
 import RewardModal from "./RewardModal";
+import { toaster } from "../../components/ui/toaster";
 
 function CheckInForm() {
 
@@ -47,8 +48,11 @@ const [streak, setStreak] = useState(null);
       setShowRewardModal(true);
 
     } catch (error) {
-      console.log(error);
-        console.log(error.response?.data);
+     toaster.create({
+      title: "Error",
+      description: error.response.data.message || "Failed to create check-in.",
+      type: "error"
+     })
 }};
 
   useEffect(() => {

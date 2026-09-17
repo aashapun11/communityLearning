@@ -143,7 +143,7 @@ function TopicChallenges() {
                 borderColor: "teal.400",
               }}
               onClick={() =>
-                navigate(`/challenges/${challenge._id}`)
+                navigate(`/exploreChallengeDetails/${challenge._id}`)
               }
             >
               <VStack align="start" gap={3}>
