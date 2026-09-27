@@ -301,7 +301,119 @@ const getChallengeById = async (req, res, next) => {
     }
 };
 
+const getChallengeDetails = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { challengeId } = req.params;
 
+    // Find challenge
+    const challenge = await Challenge.findById(challengeId)
+      .populate("createdBy", "name username avatar")
+      .select(
+        "_id title topic description difficulty duration startDate endDate participants maxParticipants isPublic isActive createdBy"
+      )
+      .lean();
+
+    if (!challenge) {
+      return res.status(404).json({
+        message: "Challenge not found",
+      });
+    }
+
+    // Check whether current user has joined
+    const hasJoined = challenge.participants.some(
+      (participantId) =>
+        participantId.toString() === userId.toString()
+    );
+
+    if (!hasJoined) {
+      return res.status(403).json({
+        message: "You have not joined this challenge",
+      });
+    }
+
+    // Get user's check-ins for this challenge
+    const checkIns = await CheckIn.find({
+      userId,
+      challengeId,
+    })
+      .sort({ date: -1 })
+      .select("_id note mediaUrl date upvotes")
+      .lean();
+
+    // Calculate challenge day for each check-in
+    const challengeStart = new Date(challenge.startDate);
+    challengeStart.setHours(0, 0, 0, 0);
+
+    const checkInsWithDay = checkIns.map((checkIn) => {
+      const checkInDate = new Date(checkIn.date);
+      checkInDate.setHours(0, 0, 0, 0);
+
+      const differenceInDays =
+        Math.floor(
+          (checkInDate - challengeStart) /
+            (1000 * 60 * 60 * 24)
+        );
+
+      return {
+        ...checkIn,
+        day: differenceInDays + 1,
+      };
+    });
+
+    // Latest check-in
+    const lastCheckIn =
+      checkIns.length > 0
+        ? checkIns[0].date
+        : null;
+
+    // Total completed days
+    const completedDays = checkIns.length;
+
+    // Calculate progress
+    const progress =
+      challenge.duration > 0
+        ? Math.round(
+            (completedDays / challenge.duration) * 100
+          )
+        : 0;
+
+    // Remaining days
+    const remainingDays = Math.max(
+      challenge.duration - completedDays,
+      0
+    );
+
+    res.status(200).json({
+      message: "Challenge details fetched successfully",
+
+      challenge: {
+        ...challenge,
+
+        participantsCount:
+          challenge.participants.length,
+
+        hasJoined,
+
+        completedDays,
+        remainingDays,
+        progress,
+
+        lastCheckIn,
+
+        checkIns: checkInsWithDay,
+      },
+
+      userProgress: {
+        currentStreak: req.user.currentStreak,
+        longestStreak: req.user.longestStreak,
+        coins: req.user.coins,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
  const getMyChallenges = async (req, res, next) => {
   try {
@@ -474,4 +586,4 @@ const getTopicsByCategory  = (req, res) => {
   });
 };
 
-module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, getMyChallenges, joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory };
+module.exports = { createChallenge, updateChallenge, deleteChallenge, getChallenges, getChallengeById, getChallengeDetails, getMyChallenges, joinChallenge, leaveChallenge, getTopicsByCategory, getChallengesCategory };

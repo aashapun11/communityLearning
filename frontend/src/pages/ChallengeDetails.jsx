@@ -1,6 +1,6 @@
 
 
-import React from "react";
+import React , { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -30,49 +30,73 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { colors } from "../theme/colors";
+import { useParams } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 
-const challenge = {
-  title: "30 Days of C++",
-  topic: "C++",
-  difficulty: "beginner",
-  duration: 30,
+// const challenge = {
+//   title: "30 Days of C++",
+//   topic: "C++",
+//   difficulty: "beginner",
+//   duration: 30,
 
-  description:
-    "Build a strong foundation in C++ through daily practice, problem solving, and hands-on coding challenges.",
+//   description:
+//     "Build a strong foundation in C++ through daily practice, problem solving, and hands-on coding challenges.",
 
-  status: "Active",
-  membersCount: 1250,
+//   status: "Active",
+//   membersCount: 1250,
 
-  startDate: "2026 Aug 01",
-  endDate: "2026 Aug 30",
+//   startDate: "2026 Aug 01",
+//   endDate: "2026 Aug 30",
 
-  completedDays: 2,
-  currentStreak: 1,
-  longestStreak: 2,
-  coins: 82,
-  lastCheckIn: "2026 Aug 09",
+//   completedDays: 2,
+//   currentStreak: 1,
+//   longestStreak: 2,
+//   coins: 82,
+//   lastCheckIn: "2026 Aug 09",
 
-  creator: "Alex Johnson",
+//   creator: "Alex Johnson",
 
-  leaderboard: [
+  
+// };
+
+  const leaderboard = [
     { rank: 1, name: "Sarah Lee", days: 28 },
     { rank: 2, name: "John Smith", days: 26 },
     { rank: 3, name: "David Kim", days: 24 },
     { rank: 24, name: "You", days: 20 },
-  ],
+  ]
 
-  checkIns: [
+  const checkIns = [
     { day: 1, date: "2026 Aug 08", status: "Completed" },
     { day: 2, date: "2026 Aug 09", status: "Completed" },
     { day: 3, date: "-", status: "Pending" },
-  ],
-};
+  ]
 
 function ChallengeDetails() {
-  const navigate = useNavigate();
 
-  const progress =
-    (challenge.completedDays / challenge.duration) * 100;
+  const navigate = useNavigate();
+  const { challengeId } = useParams();
+  const [challenge, setChallenge] = useState(null);
+  const [userProgress, setUserProgress] = useState(null);
+
+  useEffect(() => {
+    const fetchChallenge = async () => {
+      try {
+        const response = await axiosInstance.get(`/challenges/getChallengeDetails/${challengeId}`);
+       setChallenge(response.data.challenge);
+       console.log("Challenge Details:", response.data.challenge);
+      setUserProgress(response.data.userProgress);
+        
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchChallenge();
+  }, [challengeId]);
+
+   if (!challenge) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <Box
@@ -179,19 +203,20 @@ function ChallengeDetails() {
           <HStack>
             <FaUsers />
             <Text>
-              {challenge.membersCount.toLocaleString()} Learners
+              {challenge.participantsCount} Learners
+
             </Text>
           </HStack>
 
           <HStack>
             <FaCalendarAlt />
             <Text>
-              {challenge.startDate} → {challenge.endDate}
+              {challenge.startDate.split("T")[0]} → {challenge.endDate.split("T")[0]}
             </Text>
           </HStack>
 
           <Text>
-            Created by <strong>{challenge.creator}</strong>
+            Created by <strong>{challenge.createdBy.name}</strong>
           </Text>
         </Flex>
       </Box>
@@ -230,24 +255,24 @@ function ChallengeDetails() {
 
             <SimpleGrid
               columns={{ base: 2, md: 4 }}
-              gap={4}
+              gap={2}
             >
               <StatCard
                 icon={<FaFire color="#EA580C" />}
                 label="Current Streak"
-                value={`${challenge.currentStreak} Days`}
+                value={`${userProgress.currentStreak} Days`}
               />
 
               <StatCard
                 icon={<FaFire color="#DC2626" />}
                 label="Longest Streak"
-                value={`${challenge.longestStreak} Days`}
+                value={`${userProgress.longestStreak} Days`}
               />
 
               <StatCard
                 icon={<FaCoins color="#EAB308" />}
                 label="Coins"
-                value={challenge.coins}
+                value={userProgress.coins}
               />
 
               <StatCard
@@ -256,43 +281,6 @@ function ChallengeDetails() {
                 value={`${challenge.completedDays}/${challenge.duration}`}
               />
             </SimpleGrid>
-
-            <Box mt={7}>
-              <Flex
-                justify="space-between"
-                mb={2}
-              >
-                <Text fontWeight="700">
-                  Challenge Progress
-                </Text>
-
-                <Text
-                  fontWeight="700"
-                  color={colors.primary}
-                >
-                  {Math.round(progress)}%
-                </Text>
-              </Flex>
-
-              <Progress.Root
-                value={progress}
-                size="md"
-                borderRadius="full"
-              >
-                <Progress.Track>
-                  <Progress.Range bg={colors.primary} />
-                </Progress.Track>
-              </Progress.Root>
-
-              <Text
-                mt={2}
-                fontSize="sm"
-                color={colors.secondaryText}
-              >
-                {challenge.completedDays} of{" "}
-                {challenge.duration} days completed
-              </Text>
-            </Box>
           </Box>
 
           {/* CHECK-IN HISTORY */}
@@ -314,68 +302,105 @@ function ChallengeDetails() {
               📅 Check-in History
             </Text>
 
-            <VStack
-              align="stretch"
-              gap={0}
+      <VStack align="stretch" gap={0}>
+  {challenge.checkIns.length === 0 ? (
+    <>
+    <Button
+            mt={6}
+            width="full"
+            size="lg"
+            bg={colors.primary}
+            color="white"
+            _hover={{
+              bg: colors.primaryHover,
+            }}
+            onClick={() =>
+              navigate(
+                `/checkIns/${challenge._id}`
+              )
+            }
+          >
+            Today's Check-in →
+          </Button>
+    <Text
+      fontSize="sm"
+      color={colors.secondaryText}
+      textAlign="center"
+      py={4}
+    >
+      No CheckIns yet. Start your streak today!
+    </Text>
+    </>
+  ) : (
+    <>
+      {challenge.checkIns.slice(0, 3).map((checkIn) => (
+        <Flex
+          key={checkIn._id}
+          justify="space-between"
+          align="center"
+          py={4}
+          borderBottom="1px solid"
+          borderColor={colors.border}
+        >
+          <HStack gap={4}>
+            <Box
+              w="34px"
+              h="34px"
+              borderRadius="full"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bg="green.50"
+              color="green.600"
+              fontWeight="700"
             >
-              {challenge.checkIns.map((checkIn) => (
-                <Flex
-                  key={checkIn.day}
-                  justify="space-between"
-                  align="center"
-                  py={4}
-                  borderBottom="1px solid"
-                  borderColor={colors.border}
-                >
-                  <HStack gap={4}>
-                    <Box
-                      w="34px"
-                      h="34px"
-                      borderRadius="full"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      bg={
-                        checkIn.status === "Completed"
-                          ? "green.50"
-                          : "gray.100"
-                      }
-                    >
-                      {checkIn.status === "Completed"
-                        ? "✓"
-                        : "−"}
-                    </Box>
+              ✓
+            </Box>
 
-                    <Box>
-                      <Text
-                        fontWeight="600"
-                      >
-                        Day {checkIn.day}
-                      </Text>
+            <Box>
+              <Text fontWeight="600">
+                Day {checkIn.day}
+              </Text>
 
-                      <Text
-                        fontSize="sm"
-                        color={colors.secondaryText}
-                      >
-                        {checkIn.date}
-                      </Text>
-                    </Box>
-                  </HStack>
+              <Text
+                fontSize="sm"
+                color={colors.secondaryText}
+              >
+                {new Date(checkIn.date).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                  }
+                )}
+              </Text>
+            </Box>
+          </HStack>
 
-                  <Text
-                    fontSize="sm"
-                    fontWeight="600"
-                    color={
-                      checkIn.status === "Completed"
-                        ? "green.600"
-                        : colors.secondaryText
-                    }
-                  >
-                    {checkIn.status}
-                  </Text>
-                </Flex>
-              ))}
-            </VStack>
+          <Text
+            fontSize="sm"
+            fontWeight="600"
+            color="green.600"
+          >
+            Completed
+          </Text>
+        </Flex>
+      ))}
+
+      {challenge.checkIns.length > 3 && (
+        <Button    
+          color={colors.primary}
+          mt={3}
+          width="100%"
+        >
+          View More...
+        </Button>
+      )}
+    </>
+  )}
+</VStack>
+
           </Box>
         </GridItem>
 
@@ -413,7 +438,7 @@ function ChallengeDetails() {
               align="stretch"
               gap={2}
             >
-              {challenge.leaderboard.map((user) => (
+              {leaderboard.map((user) => (
                 <Flex
                   key={`${user.rank}-${user.name}`}
                   justify="space-between"
