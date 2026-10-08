@@ -32,32 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { colors } from "../theme/colors";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-
-// const challenge = {
-//   title: "30 Days of C++",
-//   topic: "C++",
-//   difficulty: "beginner",
-//   duration: 30,
-
-//   description:
-//     "Build a strong foundation in C++ through daily practice, problem solving, and hands-on coding challenges.",
-
-//   status: "Active",
-//   membersCount: 1250,
-
-//   startDate: "2026 Aug 01",
-//   endDate: "2026 Aug 30",
-
-//   completedDays: 2,
-//   currentStreak: 1,
-//   longestStreak: 2,
-//   coins: 82,
-//   lastCheckIn: "2026 Aug 09",
-
-//   creator: "Alex Johnson",
-
-  
-// };
+import CheckInHistory from "../components/checkIns/CheckInHistory";
 
   const leaderboard = [
     { rank: 1, name: "Sarah Lee", days: 28 },
@@ -66,25 +41,34 @@ import axiosInstance from "../api/axiosInstance";
     { rank: 24, name: "You", days: 20 },
   ]
 
-  const checkIns = [
-    { day: 1, date: "2026 Aug 08", status: "Completed" },
-    { day: 2, date: "2026 Aug 09", status: "Completed" },
-    { day: 3, date: "-", status: "Pending" },
-  ]
-
 function ChallengeDetails() {
 
   const navigate = useNavigate();
   const { challengeId } = useParams();
   const [challenge, setChallenge] = useState(null);
   const [userProgress, setUserProgress] = useState(null);
+  const REWARD_META = {
+  on_fire: {
+    title: "7-Day Streak",
+    reward: "🔥 On Fire Badge",
+  },
+
+  unstoppable: {
+    title: "14-Day Streak",
+    reward: "💪 Unstoppable Badge",
+  },
+
+  finisher: {
+    title: "Challenge Completion",
+    reward: "🏆 Finisher Badge",
+  },
+};
 
   useEffect(() => {
     const fetchChallenge = async () => {
       try {
         const response = await axiosInstance.get(`/challenges/getChallengeDetails/${challengeId}`);
        setChallenge(response.data.challenge);
-       console.log("Challenge Details:", response.data.challenge);
       setUserProgress(response.data.userProgress);
         
       } catch (error) {
@@ -333,71 +317,9 @@ function ChallengeDetails() {
     </>
   ) : (
     <>
-      {challenge.checkIns.slice(0, 3).map((checkIn) => (
-        <Flex
-          key={checkIn._id}
-          justify="space-between"
-          align="center"
-          py={4}
-          borderBottom="1px solid"
-          borderColor={colors.border}
-        >
-          <HStack gap={4}>
-            <Box
-              w="34px"
-              h="34px"
-              borderRadius="full"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              bg="green.50"
-              color="green.600"
-              fontWeight="700"
-            >
-              ✓
-            </Box>
-
-            <Box>
-              <Text fontWeight="600">
-                Day {checkIn.day}
-              </Text>
-
-              <Text
-                fontSize="sm"
-                color={colors.secondaryText}
-              >
-                {new Date(checkIn.date).toLocaleDateString(
-                  "en-US",
-                  {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                  }
-                )}
-              </Text>
-            </Box>
-          </HStack>
-
-          <Text
-            fontSize="sm"
-            fontWeight="600"
-            color="green.600"
-          >
-            Completed
-          </Text>
-        </Flex>
-      ))}
-
-      {challenge.checkIns.length > 3 && (
-        <Button    
-          color={colors.primary}
-          mt={3}
-          width="100%"
-        >
-          View More...
-        </Button>
-      )}
-    </>
+      
+      <CheckInHistory challenge={challenge} />
+    </>        
   )}
 </VStack>
 
@@ -407,7 +329,7 @@ function ChallengeDetails() {
         {/* RIGHT COLUMN */}
 
         <GridItem>
-          {/* LEADERBOARD */}
+          {/* LEADERBOARD will be performed after the comment section is done */}
 
           <Box
             bg={colors.card}
@@ -500,49 +422,43 @@ function ChallengeDetails() {
 
           {/* REWARDS */}
 
-          <Box
-            mt={6}
-            bg={colors.card}
-            border="1px solid"
-            borderColor={colors.border}
-            borderRadius="xl"
-            p={6}
-            shadow="sm"
-          >
-            <HStack mb={5}>
-              <FaMedal color="#EAB308" />
+         <Box
+  mt={6}
+  bg={colors.card}
+  border="1px solid"
+  borderColor={colors.border}
+  borderRadius="xl"
+  p={6}
+  shadow="sm"
+>
+  <HStack mb={5}>
+    <FaMedal color="#EAB308" />
 
-              <Text
-                fontSize="lg"
-                fontWeight="700"
-              >
-                Challenge Rewards
-              </Text>
-            </HStack>
+    <Text
+      fontSize="lg"
+      fontWeight="700"
+    >
+      Challenge Rewards
+    </Text>
+  </HStack>
 
-            <VStack
-              align="stretch"
-              gap={4}
-            >
-              <RewardRow
-                title="7-Day Streak"
-                reward="🔥 On Fire Badge"
-                unlocked={false}
-              />
+  <VStack align="stretch" gap={4}>
+    {challenge.rewards?.map((reward) => {
+      const meta = REWARD_META[reward.badgeType];
 
-              <RewardRow
-                title="14-Day Streak"
-                reward="🏆 Consistent Learner"
-                unlocked={false}
-              />
+      if (!meta) return null;
 
-              <RewardRow
-                title="30-Day Completion"
-                reward="🎓 Challenge Master"
-                unlocked={false}
-              />
-            </VStack>
-          </Box>
+      return (
+        <RewardRow
+          key={reward.badgeType}
+          title={meta.title}
+          reward={meta.reward}
+          unlocked={reward.unlocked}
+        />
+      );
+    })}
+  </VStack>
+</Box>
 
           {/* ACTION */}
 

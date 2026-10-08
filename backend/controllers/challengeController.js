@@ -3,6 +3,7 @@ const CheckIn = require('../models/CheckInModel');
 const AppError = require('../utils/AppError');
 const { processJoinRewards } = require('../utils/challengeRewards');
 const {topicCategories} = require('../constants/topicCategories');
+const Badge = require('../models/BadgeModel');
 
 
 
@@ -25,6 +26,11 @@ const createChallenge = async (req, res, next) => {
             startDate: start,
             endDate: end,
             isPublic,
+            rewards: [
+              {badgeType: "on_fire"},
+              {badgeType: "unstoppable"},
+              {badgeType: "finisher"}
+            ],
             createdBy: req.user._id  // comes from JWT middleware
         });
 
@@ -310,7 +316,7 @@ const getChallengeDetails = async (req, res, next) => {
     const challenge = await Challenge.findById(challengeId)
       .populate("createdBy", "name username avatar")
       .select(
-        "_id title topic description difficulty duration startDate endDate participants maxParticipants isPublic isActive createdBy"
+        "_id title topic description difficulty duration startDate endDate participants maxParticipants isPublic isActive createdBy rewards"
       )
       .lean();
 
@@ -384,6 +390,20 @@ const getChallengeDetails = async (req, res, next) => {
       0
     );
 
+    // Fetch rewards and check if user has unlocked them
+   const rewards = await Promise.all(
+  (challenge.rewards || []).map(async (reward) => {
+    const badge = await Badge.findOne({
+      userId,
+      type: reward.badgeType,
+    }).lean();
+    return {
+      badgeType: reward.badgeType,
+      unlocked: !!badge,
+    };
+  })
+);
+
     res.status(200).json({
       message: "Challenge details fetched successfully",
 
@@ -402,6 +422,7 @@ const getChallengeDetails = async (req, res, next) => {
         lastCheckIn,
 
         checkIns: checkInsWithDay,
+        rewards
       },
 
       userProgress: {

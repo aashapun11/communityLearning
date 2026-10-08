@@ -13,10 +13,10 @@ const badgeSchema = new mongoose.Schema({
             'first_flame', 'on_fire', 'unstoppable',
             'consistency_king', 'legendary',
             // check-ins
-            'first_step', 'getting_started', 'half_century',
-            'century_club', 'checkin_machine',
+            'first_step', 'getting_started', 'building_momentum', 'half_century', 'dedicated_learner',
+            'century_club', 'elite_learner', 'checkin_machine',
             // challenges
-            'challenge_accepted', 'finisher', 'multi_tasker',
+            'challenge_accepted', 'finisher', 'multi_tasker', 
             'serial_finisher', 'challenge_master',
             // social
             'social_butterfly', 'community_builder',

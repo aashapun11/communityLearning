@@ -63,7 +63,23 @@ topic: {
     isActive: { //currently active or not, if false, it means the challenge has ended
         type: Boolean,
         default: true
-    }
+    },
+
+    rewards: [
+  {
+    badgeType: {
+      type: String,
+      enum: [
+        "on_fire",
+        "unstoppable",
+        "finisher",
+      ],
+      required: true,
+    },
+  },
+],
+     
+    
 },
 { timestamps: true });
 
