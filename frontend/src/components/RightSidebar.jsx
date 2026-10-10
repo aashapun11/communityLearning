@@ -14,8 +14,24 @@ import {
 import { FaFire, FaCoins, FaMedal } from "react-icons/fa";
 import { MdTaskAlt } from "react-icons/md";
 import { colors } from "../theme/colors";
+import {useChallenge} from "../context/ChallengeContext";
 
 function RightSidebar() {
+  const { myChallenges, loading, error } = useChallenge();
+
+const joinedCount = myChallenges.length;
+
+const activeCount = myChallenges.filter(
+  (challenge) => challenge.status === "active"
+).length;
+
+const completedCount = myChallenges.filter(
+  (challenge) => challenge.status === "completed"
+).length;
+
+const currentStreak = myChallenges?.[0]?.currentStreak ?? 0;
+const coins = myChallenges?.[0]?.coins ?? 0;
+
   return (
     <Box
       w="320px"
@@ -57,7 +73,7 @@ function RightSidebar() {
                 fontWeight="bold"
                 color={colors.primary}
               >
-                12 Days
+                {currentStreak}
               </Text>
             </HStack>
 
@@ -66,11 +82,14 @@ function RightSidebar() {
                 <FaCoins color="#D97706" />
                 <Text>Coins</Text>
               </HStack>
-
-              <Text fontWeight="bold">
-                1,240
+              <Text
+                fontWeight="bold"
+                color={colors.primary}
+              >
+                {myChallenges.reduce((total, challenge) => total + (challenge.coins || 0), 0)}
               </Text>
             </HStack>
+           
 
             <HStack justify="space-between">
               <HStack>
@@ -79,7 +98,7 @@ function RightSidebar() {
               </HStack>
 
               <Text fontWeight="bold">
-                6
+                {joinedCount}
               </Text>
             </HStack>
 
@@ -90,7 +109,7 @@ function RightSidebar() {
               </HStack>
 
               <Text fontWeight="bold">
-                2
+                {completedCount}
               </Text>
             </HStack>
 

@@ -466,8 +466,19 @@ const getChallengeDetails = async (req, res, next) => {
           challengeId: challenge._id,
         });
 
+        const now = new Date();
+
+
         return {
           ...challenge,
+          status:
+    completedDays >= challenge.duration
+      ? "completed"
+      : new Date(challenge.startDate) > now
+      ? "upcoming"
+      : challenge.isActive
+      ? "active"
+      : "inactive",
 
           // Challenge-level information
           membersCount: challenge.participants.length,
