@@ -43,7 +43,7 @@ const loginUser = async (req, res, next) => {
                 { email: emailOrUsername },
                 { username: emailOrUsername }
             ]
-        }).select( 'password name email role currentStreak longestStreak lastCheckInDate timezone');
+        }).select( 'password name email role currentStreak longestStreak coins lastCheckInDate timezone');
 
         if (!user) {
             return next(new AppError("User not found", 404));
@@ -69,20 +69,18 @@ const loginUser = async (req, res, next) => {
             if (Math.round(diffDays) > 1) currentStreak = 0;
 }
 
-
-        res.status(200).json({ message: "Login successful",
-             token: generateToken(user._id),
-             user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-             },
-            streak: {
+            res.status(200).json({
+            message: "Login successful",
+            token: generateToken(user._id),
+            user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
             currentStreak,
-            longestStreak: user.longestStreak
-            }
-            
-            });
+            longestStreak: user.longestStreak,
+            coins: user.coins,
+        },
+        });
     } catch (err) {
         next(err);
     }

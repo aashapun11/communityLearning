@@ -33,8 +33,8 @@ const navigate = useNavigate();
     e.preventDefault();
     try {
       const result = await axiosInstance.post("/auth/login", formData);
-      const { user, token } = result.data;
-      login(user, token);
+      login(result.data.user, result.data.token);
+
       
       toaster.create({
         title: "Login successful.",

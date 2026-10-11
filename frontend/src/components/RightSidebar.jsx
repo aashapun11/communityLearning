@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   VStack,
@@ -15,9 +15,13 @@ import { FaFire, FaCoins, FaMedal } from "react-icons/fa";
 import { MdTaskAlt } from "react-icons/md";
 import { colors } from "../theme/colors";
 import {useChallenge} from "../context/ChallengeContext";
+import { AuthContext } from "../context/AuthContext";
+
 
 function RightSidebar() {
   const { myChallenges, loading, error } = useChallenge();
+    const { user } = useContext(AuthContext);
+
 
 const joinedCount = myChallenges.length;
 
@@ -29,8 +33,44 @@ const completedCount = myChallenges.filter(
   (challenge) => challenge.status === "completed"
 ).length;
 
-const currentStreak = myChallenges?.[0]?.currentStreak ?? 0;
-const coins = myChallenges?.[0]?.coins ?? 0;
+ const currentStreak = user?.currentStreak ?? 0;
+  const coins = user?.coins ?? 0;
+
+  const milestones = [
+    {
+      days: 3,
+      title: "First Flame Badge",
+      emoji: "🔥",
+    },
+    {
+      days: 7,
+      title: "On Fire Badge",
+      emoji: "🔥",
+    },
+    {
+      days: 14,
+      title: "Unstoppable Badge",
+      emoji: "💪",
+    },
+    {
+      days: 30,
+      title: "Consistency King Badge",
+      emoji: "👑",
+    },
+    {
+      days: 60,
+      title: "Legendary Badge",
+      emoji: "🏆",
+    },
+  ];
+
+  const nextMilestone = milestones.find(
+    (milestone) => currentStreak < milestone.days
+  );
+
+  const daysRemaining = nextMilestone
+    ? nextMilestone.days - currentStreak
+    : 0;
 
   return (
     <Box
@@ -69,12 +109,10 @@ const coins = myChallenges?.[0]?.coins ?? 0;
                 <Text>Current Streak</Text>
               </HStack>
 
-              <Text
-                fontWeight="bold"
-                color={colors.primary}
-              >
-                {currentStreak}
-              </Text>
+              <Text fontWeight="bold" color={colors.primary}>
+  {currentStreak} Days
+</Text>
+
             </HStack>
 
             <HStack justify="space-between">
@@ -82,12 +120,9 @@ const coins = myChallenges?.[0]?.coins ?? 0;
                 <FaCoins color="#D97706" />
                 <Text>Coins</Text>
               </HStack>
-              <Text
-                fontWeight="bold"
-                color={colors.primary}
-              >
-                {myChallenges.reduce((total, challenge) => total + (challenge.coins || 0), 0)}
-              </Text>
+             <Text fontWeight="bold">
+  {coins.toLocaleString()}
+</Text>
             </HStack>
            
 
@@ -167,38 +202,53 @@ const coins = myChallenges?.[0]?.coins ?? 0;
         {/* Next Reward */}
 
         <Box
-          bg={colors.card}
-          p={5}
-          rounded="xl"
-          shadow="sm"
-          border="1px solid"
-          borderColor={colors.border}
+  bg={colors.card}
+  p={5}
+  rounded="xl"
+  shadow="sm"
+  border="1px solid"
+  borderColor={colors.border}
+>
+  <Heading size="sm" mb={3}>
+    🎯 Next Milestone
+  </Heading>
+
+  {nextMilestone ? (
+    <>
+      <Text fontSize="sm">
+        Maintain your streak for
+        <Text
+          as="span"
+          color={colors.primary}
+          fontWeight="bold"
         >
-          <Heading size="sm" mb={3}>
-            🎯 Next Milestone
-          </Heading>
+          {" "}{daysRemaining} more{" "}
+          {daysRemaining === 1 ? "day" : "days"}
+        </Text>
+        {" "}to unlock
+      </Text>
 
-          <Text fontSize="sm">
-            Complete
-            <Text
-              as="span"
-              color={colors.primary}
-              fontWeight="bold"
-            >
-              {" "}3 more days{" "}
-            </Text>
-            to unlock
-          </Text>
+      <Badge
+        mt={3}
+        colorPalette="orange"
+        rounded="full"
+        px={3}
+      >
+        {nextMilestone.emoji} {nextMilestone.title}
+      </Badge>
+    </>
+  ) : (
+    <>
+      <Text fontSize="sm">
+        Amazing! You've achieved every streak milestone.
+      </Text>
 
-          <Badge
-            mt={3}
-            colorPalette="orange"
-            rounded="full"
-            px={3}
-          >
-            🔥 On Fire Badge
-          </Badge>
-        </Box>
+      <Badge mt={3} colorPalette="green" rounded="full" px={3}>
+        🏆 All Streak Milestones Achieved
+      </Badge>
+    </>
+  )}
+</Box>
 
         {/* Monthly Rank */}
 
